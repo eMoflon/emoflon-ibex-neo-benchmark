@@ -46,6 +46,8 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 	private Package rootPackage;
 	private Folder rootFolder;
 
+	private List<Type> rootTypes;
+
 	private int glossaryLinkCounter;
 
 	public ExtType2Doc_ConcSync_MDGenerator(Resource source, Resource target, Resource corr, Resource protocol, Resource delta) {
@@ -61,6 +63,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 	@Override
 	protected void genModels() {
+		rootTypes = new LinkedList<>();
 		glossaryLinkCounter = 0;
 
 		createContainers();
@@ -121,6 +124,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 		// SRC
 		Type t = createType(postfix, false, rootPackage);
+		rootTypes.add(t);
 		// TRG
 		Doc d = createDoc(postfix, rootFolder);
 		// CORR
@@ -355,7 +359,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		for (int i = 0; i < parameters.num_of_changes; i++) {
 			int deltaIndex = i % deltaFunctions.size();
 			boolean generateConflict = i <= parameters.num_of_conflicts;
-			deltaFunctions.get(deltaIndex).accept(rootPackage.getTypes().get(i), generateConflict);
+			deltaFunctions.get(deltaIndex).accept(rootTypes.get(i), generateConflict);
 		}
 	}
 
