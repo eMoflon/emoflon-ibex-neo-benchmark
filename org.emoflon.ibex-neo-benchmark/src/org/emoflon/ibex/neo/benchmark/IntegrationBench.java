@@ -32,9 +32,12 @@ public abstract class IntegrationBench<BP extends BenchParameters> extends IbexB
 
 		if (saveTransformedModels)
 			opStrat.saveModels();
+
+		int ram = getUsedRAM();
+
 		opStrat.terminate();
 
-		return new BenchEntry(parameters.modelScale, parameters.numOfChanges, numOfElements, init, resolve);
+		return new BenchEntry(parameters.modelScale, parameters.numOfChanges, numOfElements, init, resolve, ram);
 	}
 
 }

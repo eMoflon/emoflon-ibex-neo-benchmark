@@ -54,6 +54,9 @@ public abstract class IbexBench<OpStrat extends OperationalStrategy, BenchParams
 					target = createResource(options.project.path() + "/instances" + filename_trg);
 					corr = createResource(options.project.path() + "/instances" + filename_trg);
 					protocol = createResource(options.project.path() + "/instances" + filename_protocol);
+					
+					DeltaPackageImpl.init();
+					delta = createResource(options.project.path() + "/instances" + filename_delta);
 				}
 			});
 			initResources(opStrat);
@@ -169,6 +172,11 @@ public abstract class IbexBench<OpStrat extends OperationalStrategy, BenchParams
 		corr.save(null);
 		protocol.save(null);
 		delta.save(null);
+	}
+	
+	protected int getUsedRAM() {
+		Runtime.getRuntime().gc();
+		return (int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024));
 	}
 
 }

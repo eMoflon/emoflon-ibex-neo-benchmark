@@ -22,21 +22,24 @@ public abstract class SynchronizationBench<BP extends BenchParameters> extends I
 		opStrat.run();
 		long toc = System.currentTimeMillis();
 		double init = (double) (toc - tic) / 1000;
-		
+
 		DeltaContainer deltaContainer = (DeltaContainer) delta.getContents().get(0);
 		for (Delta delta : deltaContainer.getDeltas())
 			delta.apply();
-		
+
 		tic = System.currentTimeMillis();
 		opStrat.run();
 		toc = System.currentTimeMillis();
 		double resolve = (double) (toc - tic) / 1000;
-		
+
 		if (saveTransformedModels)
 			opStrat.saveModels();
+
+		int ram = getUsedRAM();
+
 		opStrat.terminate();
 
-		return new BenchEntry(parameters.modelScale, parameters.numOfChanges, numOfElements, init, resolve);
+		return new BenchEntry(parameters.modelScale, parameters.numOfChanges, numOfElements, init, resolve, ram);
 	}
 
 }
