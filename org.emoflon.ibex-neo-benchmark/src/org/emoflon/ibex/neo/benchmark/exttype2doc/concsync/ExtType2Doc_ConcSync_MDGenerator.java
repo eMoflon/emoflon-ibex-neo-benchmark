@@ -389,7 +389,33 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 	}
 
 	private void createDeletePreserveConflict_Vertical(Type t, boolean generateConflict) {
-		// TODO
+		Delta delta = createDelta(false, true);
+
+		Doc d = name2doc.get(t.getName());
+		String newRootName = "DELETE_PRESERVE_" + t.getName();
+
+		createAttrDelta(t, sPackage.getNamedElement_Name(), newRootName, delta);
+		createAttrDelta(d, sPackage.getNamedElement_Name(), newRootName, delta);
+
+		Type subT = t.getExtendedBy().get(0);
+		Doc subD = d.getSubDocs().get(0);
+
+		// go to last Type in hierarchy
+		while (!subT.getExtendedBy().isEmpty()) {
+			subT = subT.getExtendedBy().get(0);
+			subD = d.getSubDocs().get(0);
+		}
+
+		// traverse backward and increase conflict size
+		for (int i = 1; i < parameters.num_of_changes; i++)
+			subT = subT.getInheritsFrom().get(0);
+
+		deleteType(subT, delta);
+		
+		Entry newE = createEntry(t.getName().substring(4) + "_new_method", EntryType.METHOD, null);
+		
+		createObject(newE, delta);
+		createLink(subD, newE, tPackage.getDoc_Entries(), delta);
 	}
 
 	private void createAttributeConflict(Type t, boolean generateConflict) {
