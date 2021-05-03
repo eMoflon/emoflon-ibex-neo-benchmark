@@ -3,7 +3,6 @@ package org.emoflon.ibex.neo.benchmark;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +33,7 @@ public class ScaledBenchRunner {
 				process.waitFor();
 				process.exitValue();
 
-				InputStream inputStream = process.getInputStream();
-				InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+				InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
 				BufferedReader reader = new BufferedReader(inputStreamReader);
 
 				StringBuilder b = new StringBuilder();

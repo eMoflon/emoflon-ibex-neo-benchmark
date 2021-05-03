@@ -15,11 +15,10 @@ public class ExtType2Doc_ShortCut_Params extends BenchParameters {
 	public final int num_of_fields;
 	public final int num_of_methods;
 	public final int num_of_parameters;
+	public final ShortCutDelta delta_type;
 
-	public final int num_of_conflicts;
-
-	public ExtType2Doc_ShortCut_Params(String name, int modelScale, ScaleOrientation scaleOrientation, int numOfChanges) {
-		super(name, modelScale, scaleOrientation, numOfChanges);
+	public ExtType2Doc_ShortCut_Params(String name, int modelScale, ScaleOrientation scaleOrientation, ShortCutDelta deltaType) {
+		super(name, modelScale, scaleOrientation, -1);
 
 		switch (scaleOrientation) {
 		case HORIZONTAL:
@@ -36,14 +35,14 @@ public class ExtType2Doc_ShortCut_Params extends BenchParameters {
 		horizontal_package_scales = new int[] { 3, 1, 2 };
 		types_for_packages = new boolean[] { false, false, true };
 
-		num_of_root_types = 3;
-		type_inheritance_depth = 3;
-		horizontal_type_inheritance_scale = 3;
+		num_of_root_types = 1;
+		type_inheritance_depth = 4;
+		horizontal_type_inheritance_scale = 2;
 		num_of_fields = 3;
 		num_of_methods = 3;
 		num_of_parameters = 2;
-
-		num_of_conflicts = numOfChanges;
+		
+		delta_type = deltaType;
 	}
 
 }

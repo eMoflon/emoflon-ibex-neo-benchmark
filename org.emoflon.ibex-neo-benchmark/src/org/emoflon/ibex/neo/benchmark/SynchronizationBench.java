@@ -19,7 +19,7 @@ public abstract class SynchronizationBench<BP extends BenchParameters> extends I
 	@Override
 	protected BenchEntry applyDeltaAndRun(SYNC opStrat, BP parameters, boolean saveTransformedModels) throws IOException, InvalidDeltaException {
 		long tic = System.currentTimeMillis();
-		opStrat.run();
+		opStrat.forward();
 		long toc = System.currentTimeMillis();
 		double init = (double) (toc - tic) / 1000;
 
@@ -28,7 +28,7 @@ public abstract class SynchronizationBench<BP extends BenchParameters> extends I
 			delta.apply();
 
 		tic = System.currentTimeMillis();
-		opStrat.run();
+		opStrat.forward();
 		toc = System.currentTimeMillis();
 		double resolve = (double) (toc - tic) / 1000;
 

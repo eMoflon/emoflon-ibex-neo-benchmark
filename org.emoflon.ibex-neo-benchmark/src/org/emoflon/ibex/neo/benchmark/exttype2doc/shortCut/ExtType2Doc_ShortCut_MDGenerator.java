@@ -27,6 +27,7 @@ import ExtTypeModel.Method;
 import ExtTypeModel.Package;
 import ExtTypeModel.Parameter;
 import ExtTypeModel.Type;
+import delta.Delta;
 
 public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<ExtType2Doc_ShortCutFactory, ExtType2Doc_ShortCut_Params> {
 
@@ -52,7 +53,6 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		createProject();
 		// TRG
 		createDocContainer();
-		createGlossary();
 		// CORR
 		Project2DocContainer pr2dc = createCorr(cFactory.createProject2DocContainer(), sContainer, tContainer);
 		// MARKER
@@ -64,10 +64,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 	}
 
 	private void createPackageAndFolderHierarchies() {
-		if (parameters.horizontal_package_scales.length == 0)
-			return;
-
-		for (int i = 0; i < parameters.horizontal_package_scales[0]; i++)
+		for (int i = 0; i < parameters.num_of_root_packages; i++)
 			createRootPackageAndFolder(i);
 	}
 
@@ -90,10 +87,8 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCONTEXT__TRG__dc(tContainer);
 		protocol.getContents().add(marker);
 
-		if (parameters.types_for_packages.length != 0 && parameters.types_for_packages[0])
-			createTypeAndDocHierarchies(p, f, postfix);
-
-		createPackageAndFolderHierarchies(p, f, 1, postfix);
+		if (parameters.horizontal_package_scales.length != 0)
+			createPackageAndFolderHierarchies(p, f, 0, postfix);
 	}
 
 	private void createPackageAndFolderHierarchies(Package rootP, Folder rootF, int currentDepth, String oldPostfix) {
@@ -119,6 +114,9 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCONTEXT__CORR__p2f((Package2Folder) src2corr.get(superP));
 		marker.setCONTEXT__TRG__f(f);
 		protocol.getContents().add(marker);
+
+		if (currentDepth < parameters.types_for_packages.length && parameters.types_for_packages[currentDepth])
+			createTypeAndDocHierarchies(p, f, postfix);
 
 		createPackageAndFolderHierarchies(p, f, currentDepth + 1, postfix);
 	}
@@ -146,7 +144,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCREATE__CORR__t2d(t2d);
 		marker.setCREATE__TRG__d(d);
 		protocol.getContents().add(marker);
-		
+
 		createMethodsAndEntries(t, d, postfix);
 		createFieldsAndEntries(t, d, postfix);
 
@@ -184,7 +182,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCREATE__CORR__nt2nd(t2d);
 		marker.setCREATE__TRG__nd(d);
 		protocol.getContents().add(marker);
-		
+
 		createMethodsAndEntries(t, d, postfix);
 		createFieldsAndEntries(t, d, postfix);
 
@@ -275,10 +273,114 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		protocol.getContents().add(marker);
 	}
 
+	//// DELTA ////
+
 	@Override
 	protected void genDelta() {
-		// TODO Auto-generated method stub
+		for (Package p : sContainer.getRootPackages()) {
+			switch (parameters.delta_type) {
+			case CREATE_ROOT:
+				createRoot(p);
+				break;
+			case MOVE_PACKAGE:
+				movePackage(p);
+				break;
+			case MOVE_TYPE_ROOT:
+				moveTypeRoot(p);
+				break;
+			case MOVE_TYPE_LEAVE:
+				moveTypeLeave(p);
+				break;
+			case CREATE_TYPE_ROOT:
+				createTypeRoot(p);
+			default:
+				break;
+			}
+		}
+	}
 
+	private void createRoot(Package p) {
+		Delta delta = createDelta(false, true);
+
+		Package newRoot = sFactory.createPackage();
+		newRoot.setName("NewRoot" + p.getName());
+		name2package.put(newRoot.getName(), newRoot);
+
+		createObject(newRoot, delta);
+		createLink(sContainer, newRoot, sPackage.getProject_RootPackages(), delta);
+		createLink(newRoot, p, sPackage.getPackage_SubPackages(), delta);
+	}
+
+	private void movePackage(Package p) {
+		Delta delta = createDelta(false, true);
+
+		Package lastPackage = p;
+		while (!lastPackage.getSubPackages().isEmpty())
+			lastPackage = lastPackage.getSubPackages().get(0);
+
+		createLink(p, lastPackage, sPackage.getPackage_SubPackages(), delta);
+	}
+
+	private void moveTypeRoot(Package p) {
+		Delta delta = createDelta(false, true);
+
+		Package firstPackageWithTypes = p;
+		while (!firstPackageWithTypes.getSubPackages().isEmpty()) {
+			firstPackageWithTypes = firstPackageWithTypes.getSubPackages().get(0);
+			if (!firstPackageWithTypes.getTypes().isEmpty())
+				break;
+		}
+
+		for (Type type : firstPackageWithTypes.getTypes())
+			createLink(p, type, sPackage.getPackage_Types(), delta);
+	}
+
+	private void moveTypeLeave(Package p) {
+		Delta delta = createDelta(false, true);
+
+		Package firstPackageWithTypes = p;
+		while (!firstPackageWithTypes.getSubPackages().isEmpty()) {
+			firstPackageWithTypes = firstPackageWithTypes.getSubPackages().get(0);
+			if (!firstPackageWithTypes.getTypes().isEmpty())
+				break;
+		}
+		Type lastType = null;
+		for (Type t : firstPackageWithTypes.getTypes()) {
+			if (t.getExtendedBy().isEmpty()) {
+				lastType = t;
+				break;
+			}
+		}
+
+		createLink(p, lastType, sPackage.getPackage_Types(), delta);
+		for (Type superType : lastType.getInheritsFrom())
+			deleteLink(superType, lastType, sPackage.getType_ExtendedBy(), delta);
+	}
+
+	private void createTypeRoot(Package p) {
+		Delta delta = createDelta(false, true);
+
+		Package firstPackageWithTypes = p;
+		while (!firstPackageWithTypes.getSubPackages().isEmpty()) {
+			firstPackageWithTypes = firstPackageWithTypes.getSubPackages().get(0);
+			if (!firstPackageWithTypes.getTypes().isEmpty())
+				break;
+		}
+		Type rootType = null;
+		for (Type t : firstPackageWithTypes.getTypes()) {
+			if (t.getInheritsFrom().isEmpty()) {
+				rootType = t;
+				break;
+			}
+		}
+
+		Type newRootType = sFactory.createType();
+		newRootType.setName("NewRoot" + rootType.getName());
+		name2type.put(newRootType.getName(), newRootType);
+
+		createObject(newRootType, delta);
+		createLink(firstPackageWithTypes, newRootType, sPackage.getPackage_Types(), delta);
+		createLink(newRootType, rootType, sPackage.getType_ExtendedBy(), delta);
 	}
 
 }

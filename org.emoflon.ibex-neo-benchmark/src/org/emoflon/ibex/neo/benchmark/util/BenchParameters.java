@@ -20,8 +20,10 @@ public abstract class BenchParameters {
 		builder.append(name);
 		builder.append("_n");
 		builder.append(modelScale);
-		builder.append("_c");
-		builder.append(numOfChanges);
+		if (numOfChanges != -1) {
+			builder.append("_c");
+			builder.append(numOfChanges);
+		}
 		builder.append("_");
 		builder.append(scaleOrientation == ScaleOrientation.HORIZONTAL ? "H" : "V");
 		return builder.toString();
