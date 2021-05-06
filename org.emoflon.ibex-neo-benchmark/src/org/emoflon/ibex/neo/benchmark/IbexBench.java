@@ -41,11 +41,14 @@ public abstract class IbexBench<OpStrat extends OperationalStrategy, BenchParams
 
 	protected int numOfElements = -1;
 
-	public IbexBench(String projectName) {
+	protected BenchParams parameters;
+
+	public IbexBench(String projectName, BenchParams parameters) {
 		this.projectName = projectName;
+		this.parameters = parameters;
 	}
 
-	public BenchEntry genAndBench(BenchParams parameters, boolean saveTransformedModels) {
+	public BenchEntry<BenchParams> genAndBench(boolean saveTransformedModels) {
 		try {
 			OpStrat opStrat = initStub(new TGGResourceHandler() {
 				@Override
@@ -54,7 +57,7 @@ public abstract class IbexBench<OpStrat extends OperationalStrategy, BenchParams
 					target = createResource(options.project.path() + "/instances" + filename_trg);
 					corr = createResource(options.project.path() + "/instances" + filename_trg);
 					protocol = createResource(options.project.path() + "/instances" + filename_protocol);
-					
+
 					DeltaPackageImpl.init();
 					delta = createResource(options.project.path() + "/instances" + filename_delta);
 				}
@@ -65,14 +68,14 @@ public abstract class IbexBench<OpStrat extends OperationalStrategy, BenchParams
 			mdGenerator.gen(parameters);
 			this.numOfElements = mdGenerator.getNumOfElements();
 
-			return applyDeltaAndRun(opStrat, parameters, saveTransformedModels);
+			return applyDeltaAndRun(opStrat, saveTransformedModels);
 		} catch (IOException | InvalidDeltaException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 
-	public void genAndStore(BenchParams parameters) {
+	public void genAndStore() {
 		try {
 			initResourceSet();
 			initModels(projectName + "/" + genModelFolder + "/" + parameters.toString());
@@ -89,7 +92,7 @@ public abstract class IbexBench<OpStrat extends OperationalStrategy, BenchParams
 		}
 	}
 
-	public BenchEntry loadAndBench(BenchParams parameters, boolean saveTransformedModels) {
+	public BenchEntry<BenchParams> loadAndBench(boolean saveTransformedModels) {
 		String workspaceRelativeFolder = projectName + "/" + genModelFolder + "/" + parameters.toString();
 		try {
 			OpStrat opStrat = initStub(new TGGResourceHandler() {
@@ -118,7 +121,7 @@ public abstract class IbexBench<OpStrat extends OperationalStrategy, BenchParams
 			});
 			initResources(opStrat);
 
-			return applyDeltaAndRun(opStrat, parameters, saveTransformedModels);
+			return applyDeltaAndRun(opStrat, saveTransformedModels);
 		} catch (IOException | InvalidDeltaException e) {
 			e.printStackTrace();
 		}
@@ -130,8 +133,7 @@ public abstract class IbexBench<OpStrat extends OperationalStrategy, BenchParams
 	protected abstract ModelAndDeltaGenerator<?, ?, ?, ?, ?, BenchParams> initModelAndDeltaGenerator(Resource s, Resource t, Resource c, Resource p,
 			Resource d);
 
-	protected abstract BenchEntry applyDeltaAndRun(OpStrat opStrat, BenchParams parameters, boolean saveTransformedModels)
-			throws IOException, InvalidDeltaException;
+	protected abstract BenchEntry<BenchParams> applyDeltaAndRun(OpStrat opStrat, boolean saveTransformedModels) throws IOException, InvalidDeltaException;
 
 	private void initResources(OpStrat opStrat) {
 		source = opStrat.getOptions().resourceHandler().getSourceResource();
@@ -173,10 +175,18 @@ public abstract class IbexBench<OpStrat extends OperationalStrategy, BenchParams
 		protocol.save(null);
 		delta.save(null);
 	}
-	
+
 	protected int getUsedRAM() {
 		Runtime.getRuntime().gc();
 		return (int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024));
+	}
+
+	public BenchParams getParameters() {
+		return parameters;
+	}
+
+	public void setParameters(BenchParams parameters) {
+		this.parameters = parameters;
 	}
 
 }

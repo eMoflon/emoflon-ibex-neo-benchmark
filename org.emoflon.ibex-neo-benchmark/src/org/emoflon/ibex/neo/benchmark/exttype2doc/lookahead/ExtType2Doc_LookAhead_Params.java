@@ -19,7 +19,7 @@ public class ExtType2Doc_LookAhead_Params extends BenchParameters {
 	public final int num_of_conflicts;
 
 	public ExtType2Doc_LookAhead_Params(String name, int modelScale, ScaleOrientation scaleOrientation, int numOfChanges) {
-		super(name, modelScale, scaleOrientation, numOfChanges);
+		super(name, modelScale, scaleOrientation);
 
 		switch (scaleOrientation) {
 		case HORIZONTAL:
@@ -44,6 +44,25 @@ public class ExtType2Doc_LookAhead_Params extends BenchParameters {
 		num_of_parameters = 2;
 
 		num_of_conflicts = numOfChanges;
+	}
+
+	@Override
+	public String[] serializeInputParameters() {
+		return new String[] { String.valueOf(modelScale), scaleOrientation.toString() };
+	}
+	
+	@Override
+	public String[] getInputParameterNames() {
+		return new String[] { "n", "scale_orientation" };
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(super.toString());
+		builder.append("_c");
+		builder.append(num_of_conflicts);
+		return builder.toString();
 	}
 
 }

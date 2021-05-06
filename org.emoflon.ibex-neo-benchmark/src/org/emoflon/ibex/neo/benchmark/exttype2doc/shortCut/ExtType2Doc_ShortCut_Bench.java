@@ -14,8 +14,8 @@ import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
 public class ExtType2Doc_ShortCut_Bench extends SynchronizationBench<ExtType2Doc_ShortCut_Params> {
 
-	public ExtType2Doc_ShortCut_Bench(String projectName) {
-		super(projectName);
+	public ExtType2Doc_ShortCut_Bench(String projectName, ExtType2Doc_ShortCut_Params parameters) {
+		super(projectName, parameters);
 	}
 
 	@Override
@@ -38,6 +38,12 @@ public class ExtType2Doc_ShortCut_Bench extends SynchronizationBench<ExtType2Doc
 	protected ModelAndDeltaGenerator<?, ?, ?, ?, ?, ExtType2Doc_ShortCut_Params> initModelAndDeltaGenerator(Resource s, Resource t, Resource c, Resource p,
 			Resource d) {
 		return new ExtType2Doc_ShortCut_MDGenerator(s, t, c, p, d);
+	}
+
+	public static void main(String[] args) {
+		ExtType2Doc_ShortCut_Params params = new ExtType2Doc_ShortCut_Params(args);
+		ExtType2Doc_ShortCut_Bench bench = new ExtType2Doc_ShortCut_Bench("org.emoflon.ibex-neo-benchmark", params);
+		System.out.println(bench.genAndBench(false));
 	}
 
 }

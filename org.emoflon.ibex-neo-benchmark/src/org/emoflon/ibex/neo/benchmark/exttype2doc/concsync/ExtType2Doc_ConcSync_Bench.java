@@ -21,14 +21,14 @@ import org.emoflon.ibex.tgg.run.exttype2doc_concsync.INTEGRATE_App;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
 public class ExtType2Doc_ConcSync_Bench extends IntegrationBench<ExtType2Doc_ConcSync_Params> {
-	
+
 	protected int conflict_counter = 0;
 	protected int conflict_solved_attr_counter = 0;
 	protected int conflict_solved_delPres_counter = 0;
 	protected int conflict_solved_move_counter = 0;
 
-	public ExtType2Doc_ConcSync_Bench(String projectName) {
-		super(projectName);
+	public ExtType2Doc_ConcSync_Bench(String projectName, ExtType2Doc_ConcSync_Params parameters) {
+		super(projectName, parameters);
 	}
 
 	private final IntegrationPattern pattern = new IntegrationPattern(Arrays.asList( //
@@ -80,6 +80,12 @@ public class ExtType2Doc_ConcSync_Bench extends IntegrationBench<ExtType2Doc_Con
 	protected ModelAndDeltaGenerator<?, ?, ?, ?, ?, ExtType2Doc_ConcSync_Params> initModelAndDeltaGenerator(Resource s, Resource t, Resource c, Resource p,
 			Resource d) {
 		return new ExtType2Doc_ConcSync_MDGenerator(s, t, c, p, d);
+	}
+
+	public static void main(String[] args) {
+		ExtType2Doc_ConcSync_Params params = new ExtType2Doc_ConcSync_Params(args);
+		ExtType2Doc_ConcSync_Bench bench = new ExtType2Doc_ConcSync_Bench("org.emoflon.ibex-neo-benchmark", params);
+		System.out.println(bench.genAndBench(false));
 	}
 
 }

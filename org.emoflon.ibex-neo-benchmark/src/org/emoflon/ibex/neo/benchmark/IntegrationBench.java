@@ -11,12 +11,12 @@ import delta.DeltaContainer;
 
 public abstract class IntegrationBench<BP extends BenchParameters> extends IbexBench<INTEGRATE, BP> {
 
-	public IntegrationBench(String projectName) {
-		super(projectName);
+	public IntegrationBench(String projectName, BP parameters) {
+		super(projectName, parameters);
 	}
 
 	@Override
-	protected BenchEntry applyDeltaAndRun(INTEGRATE opStrat, BP parameters, boolean saveTransformedModels) throws IOException, InvalidDeltaException {
+	protected BenchEntry<BP> applyDeltaAndRun(INTEGRATE opStrat, boolean saveTransformedModels) throws IOException, InvalidDeltaException {
 		long tic = System.currentTimeMillis();
 		opStrat.run();
 		long toc = System.currentTimeMillis();
@@ -37,7 +37,7 @@ public abstract class IntegrationBench<BP extends BenchParameters> extends IbexB
 
 		opStrat.terminate();
 
-		return new BenchEntry(parameters.modelScale, parameters.numOfChanges, numOfElements, init, resolve, ram);
+		return new BenchEntry<>(parameters, numOfElements, init, resolve, ram);
 	}
 
 }

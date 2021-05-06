@@ -5,31 +5,35 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.emoflon.ibex.neo.benchmark.util.BenchContainer;
 import org.emoflon.ibex.neo.benchmark.util.BenchEntry;
+import org.emoflon.ibex.neo.benchmark.util.BenchParameters;
 
-public class ScaledBenchRunner {
+public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParameters> {
 
-	protected final Class<?> clazz;
+	protected final Class<B> benchClass;
+	protected final Class<BP> paramsClass;
 	protected final List<String> jvmArgs;
-	protected final List<List<String>> execArgs;
+	protected final List<String[]> execArgs;
 	protected final int repetitions;
 
-	public ScaledBenchRunner(Class<?> clazz, List<String> jvmArgs, List<List<String>> execArgs, int repetitions) {
-		this.clazz = clazz;
+	public ScaledBenchRunner(Class<B> benchClass, Class<BP> paramsClass, List<String> jvmArgs, List<String[]> execArgs, int repetitions) {
+		this.benchClass = benchClass;
+		this.paramsClass = paramsClass;
 		this.jvmArgs = jvmArgs;
 		this.execArgs = execArgs;
 		this.repetitions = repetitions;
 	}
 
-	public void run() throws IOException, InterruptedException {
-		BenchContainer benchCont = new BenchContainer();
+	public void run() throws Exception {
+		BenchContainer<BP> benchCont = new BenchContainer<>();
 
-		for (List<String> args : this.execArgs) {
+		for (String[] args : this.execArgs) {
 			for (int r = 0; r < this.repetitions; r++) {
-				Process process = execute(this.clazz, jvmArgs, args);
+				Process process = execute(this.benchClass, jvmArgs, Arrays.asList(args));
 				process.waitFor();
 				process.exitValue();
 
@@ -44,14 +48,7 @@ public class ScaledBenchRunner {
 					read = reader.readLine();
 				}
 
-				String[] output = b.toString().strip().split(";");
-				BenchEntry benchEntry = new BenchEntry( //
-						Integer.valueOf(output[0]), //
-						Integer.valueOf(output[1]), //
-						Integer.valueOf(output[2]), //
-						Double.valueOf(output[3]), //
-						Double.valueOf(output[4]), //
-						Integer.valueOf(output[5]));
+				BenchEntry<BP> benchEntry = new BenchEntry<>(b.toString(), paramsClass);
 				benchCont.addBench(benchEntry);
 
 				System.out.println(benchEntry);

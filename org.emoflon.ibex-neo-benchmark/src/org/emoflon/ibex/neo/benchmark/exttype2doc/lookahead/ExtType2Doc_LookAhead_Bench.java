@@ -10,8 +10,8 @@ import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
 public class ExtType2Doc_LookAhead_Bench extends IntegrationBench<ExtType2Doc_LookAhead_Params> {
 
-	public ExtType2Doc_LookAhead_Bench(String projectName) {
-		super(projectName);
+	public ExtType2Doc_LookAhead_Bench(String projectName, ExtType2Doc_LookAhead_Params parameters) {
+		super(projectName, parameters);
 	}
 
 	@Override

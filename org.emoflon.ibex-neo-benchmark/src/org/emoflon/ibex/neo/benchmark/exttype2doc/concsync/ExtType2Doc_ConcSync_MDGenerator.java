@@ -344,21 +344,22 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 			deltaFunctions.add(this::createDeletePreserveConflict_Horizontal);
 
 			if (parameters.num_of_changes > parameters.num_of_root_types)
-				throw new RuntimeException("Too many conflicts for this model");
+				throw new RuntimeException("Too many changes for this model");
 			break;
 		case VERTICAL:
 			deltaFunctions.add(this::createDeletePreserveConflict_Vertical);
 
 			if (parameters.num_of_changes > parameters.inheritance_depth)
-				throw new RuntimeException("Too many conflicts for this model");
+				throw new RuntimeException("Too many changes for this model");
 			break;
 		default:
 			break;
 		}
 
+		int num_of_conflicts = (int) (parameters.num_of_changes * parameters.conflict_ratio);
 		for (int i = 0; i < parameters.num_of_changes; i++) {
 			int deltaIndex = i % deltaFunctions.size();
-			boolean generateConflict = i <= parameters.num_of_conflicts;
+			boolean generateConflict = i <= num_of_conflicts;
 			deltaFunctions.get(deltaIndex).accept(rootTypes.get(i), generateConflict);
 		}
 	}

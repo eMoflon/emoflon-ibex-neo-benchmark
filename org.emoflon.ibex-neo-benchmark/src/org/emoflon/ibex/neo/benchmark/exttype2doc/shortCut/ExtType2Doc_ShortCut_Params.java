@@ -18,7 +18,7 @@ public class ExtType2Doc_ShortCut_Params extends BenchParameters {
 	public final ShortCutDelta delta_type;
 
 	public ExtType2Doc_ShortCut_Params(String name, int modelScale, ScaleOrientation scaleOrientation, ShortCutDelta deltaType) {
-		super(name, modelScale, scaleOrientation, -1);
+		super(name, modelScale, scaleOrientation);
 
 		switch (scaleOrientation) {
 		case HORIZONTAL:
@@ -41,8 +41,46 @@ public class ExtType2Doc_ShortCut_Params extends BenchParameters {
 		num_of_fields = 3;
 		num_of_methods = 3;
 		num_of_parameters = 2;
-		
+
 		delta_type = deltaType;
+	}
+
+	public ExtType2Doc_ShortCut_Params(String[] args) {
+		this( //
+				args[0], // name
+				Integer.valueOf(args[1]), // model scale
+				ScaleOrientation.valueOf(args[2]), // scale orientation
+				ShortCutDelta.valueOf(args[3]) // short-cut delta type
+		);
+	}
+
+	@Override
+	public String[] serializeInputParameters() {
+		return new String[] { //
+				name, //
+				String.valueOf(modelScale), //
+				scaleOrientation.toString(), //
+				delta_type.toString() //
+		};
+	}
+
+	@Override
+	public String[] getInputParameterNames() {
+		return new String[] { //
+				"name", //
+				"model_scale", //
+				"scale_orientation", //
+				"delta_type" //
+		};
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(super.toString());
+		builder.append("_");
+		builder.append(delta_type);
+		return builder.toString();
 	}
 
 }
