@@ -20,8 +20,12 @@ public class BenchEntry<BP extends BenchParameters> {
 
 	public BenchEntry(String args, Class<BP> clazz) throws Exception {
 		String[] splitted = args.strip().split(";");
+		// remove all irrelevant lines before first parameter:
+		String[] firstParam = splitted[0].split("\n");
+		splitted[0] = firstParam[firstParam.length - 1];
+
 		Constructor<BP> constructor = clazz.getConstructor(String[].class);
-		
+
 		this.parameters = constructor.newInstance(new Object[] { splitted });
 		this.elts = Integer.parseInt(splitted[splitted.length - 4]);
 		this.init = Double.parseDouble(splitted[splitted.length - 3]);

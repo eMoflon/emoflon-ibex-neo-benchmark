@@ -1,4 +1,4 @@
-package org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead;
+package org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.sync;
 
 import java.io.IOException;
 
@@ -8,9 +8,9 @@ import org.emoflon.ibex.neo.benchmark.ModelAndDeltaGenerator;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 
-public class ExtType2Doc_LookAhead_Bench extends IntegrationBench<ExtType2Doc_LookAhead_Params> {
+public class ExtType2Doc_LookAhead_Sync_Bench extends IntegrationBench<ExtType2Doc_LookAhead_Sync_Params> {
 
-	public ExtType2Doc_LookAhead_Bench(String projectName, ExtType2Doc_LookAhead_Params parameters) {
+	public ExtType2Doc_LookAhead_Sync_Bench(String projectName, ExtType2Doc_LookAhead_Sync_Params parameters) {
 		super(projectName, parameters);
 	}
 
@@ -21,7 +21,7 @@ public class ExtType2Doc_LookAhead_Bench extends IntegrationBench<ExtType2Doc_Lo
 	}
 
 	@Override
-	protected ModelAndDeltaGenerator<?, ?, ?, ?, ?, ExtType2Doc_LookAhead_Params> initModelAndDeltaGenerator(Resource s, Resource t, Resource c,
+	protected ModelAndDeltaGenerator<?, ?, ?, ?, ?, ExtType2Doc_LookAhead_Sync_Params> initModelAndDeltaGenerator(Resource s, Resource t, Resource c,
 			Resource p, Resource d) {
 		// TODO Auto-generated method stub
 		return null;
