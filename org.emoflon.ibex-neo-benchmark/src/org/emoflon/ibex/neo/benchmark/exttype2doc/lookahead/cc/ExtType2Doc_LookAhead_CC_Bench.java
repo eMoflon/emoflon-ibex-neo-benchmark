@@ -23,7 +23,6 @@ public class ExtType2Doc_LookAhead_CC_Bench extends ConsistencyCheckBench<ExtTyp
 		Function<IbexOptions, IbexOptions> ibexOptions = options -> {
 			options.resourceHandler(resourceHandler);
 			options.ilpSolver(SupportedILPSolver.Gurobi);
-			options.patterns.acStrategy(parameters.acStrategy);
 			return options;
 		};
 

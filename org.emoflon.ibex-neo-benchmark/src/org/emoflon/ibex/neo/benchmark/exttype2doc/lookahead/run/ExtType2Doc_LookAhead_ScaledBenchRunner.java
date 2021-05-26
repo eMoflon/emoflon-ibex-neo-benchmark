@@ -10,7 +10,6 @@ import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.cc.ExtType2Doc_LookA
 import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.sync.ExtType2Doc_LookAhead_Sync_Bench;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.sync.ExtType2Doc_LookAhead_Sync_Params;
 import org.emoflon.ibex.neo.benchmark.util.ScaleOrientation;
-import org.emoflon.ibex.tgg.compiler.patterns.ACStrategy;
 
 public class ExtType2Doc_LookAhead_ScaledBenchRunner {
 
@@ -39,20 +38,16 @@ public class ExtType2Doc_LookAhead_ScaledBenchRunner {
 		int[] modelSize = { //
 				100, 200, 300, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000 //
 		};
-		ACStrategy[] acStrategies = ACStrategy.values();
 
 		List<String[]> scale = new LinkedList<>();
 
-		for (int i = 0; i < acStrategies.length; i++) {
-			for (int j = 0; j < modelSize.length; j++) {
-				String[] vars = new ExtType2Doc_LookAhead_CC_Params( //
-						"scaledModel_cc", //
-						modelSize[j], //
-						ScaleOrientation.HORIZONTAL, //
-						acStrategies[i] //
-				).serializeInputParameters();
-				scale.add(vars);
-			}
+		for (int j = 0; j < modelSize.length; j++) {
+			String[] vars = new ExtType2Doc_LookAhead_CC_Params( //
+					"scaledModel_cc", //
+					modelSize[j], //
+					ScaleOrientation.HORIZONTAL //
+			).serializeInputParameters();
+			scale.add(vars);
 		}
 
 		return scale;
