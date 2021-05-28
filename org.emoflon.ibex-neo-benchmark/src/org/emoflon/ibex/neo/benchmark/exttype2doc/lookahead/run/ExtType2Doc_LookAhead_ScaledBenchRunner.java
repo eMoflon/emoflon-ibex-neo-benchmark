@@ -5,10 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.emoflon.ibex.neo.benchmark.ScaledBenchRunner;
+import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.ExtType2Doc_LookAhead_Params;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.cc.ExtType2Doc_LookAhead_CC_Bench;
-import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.cc.ExtType2Doc_LookAhead_CC_Params;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.sync.ExtType2Doc_LookAhead_Sync_Bench;
-import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.sync.ExtType2Doc_LookAhead_Sync_Params;
 import org.emoflon.ibex.neo.benchmark.util.ScaleOrientation;
 
 public class ExtType2Doc_LookAhead_ScaledBenchRunner {
@@ -19,12 +18,12 @@ public class ExtType2Doc_LookAhead_ScaledBenchRunner {
 		switch (args[0]) {
 		case "cc":
 			runner = new ScaledBenchRunner<>( //
-					ExtType2Doc_LookAhead_CC_Bench.class, ExtType2Doc_LookAhead_CC_Params.class, //
+					ExtType2Doc_LookAhead_CC_Bench.class, ExtType2Doc_LookAhead_Params.class, //
 					Arrays.asList("-Xmx28G"), scaledModel_cc(), 5);
 			break;
 		case "sync":
 			runner = new ScaledBenchRunner<>( //
-					ExtType2Doc_LookAhead_Sync_Bench.class, ExtType2Doc_LookAhead_Sync_Params.class, //
+					ExtType2Doc_LookAhead_Sync_Bench.class, ExtType2Doc_LookAhead_Params.class, //
 					Arrays.asList("-Xmx28G"), scaledModel_sync(), 5);
 		default:
 			break;
@@ -42,7 +41,7 @@ public class ExtType2Doc_LookAhead_ScaledBenchRunner {
 		List<String[]> scale = new LinkedList<>();
 
 		for (int j = 0; j < modelSize.length; j++) {
-			String[] vars = new ExtType2Doc_LookAhead_CC_Params( //
+			String[] vars = new ExtType2Doc_LookAhead_Params( //
 					"scaledModel_cc", //
 					modelSize[j], //
 					ScaleOrientation.HORIZONTAL //
@@ -61,8 +60,8 @@ public class ExtType2Doc_LookAhead_ScaledBenchRunner {
 		List<String[]> scale = new LinkedList<>();
 
 		for (int j = 0; j < modelSize.length; j++) {
-			String[] vars = new ExtType2Doc_LookAhead_Sync_Params( //
-					"scaledModel_cc", //
+			String[] vars = new ExtType2Doc_LookAhead_Params( //
+					"scaledModel_sync", //
 					modelSize[j], //
 					ScaleOrientation.HORIZONTAL //
 			).serializeInputParameters();

@@ -1,15 +1,21 @@
-package org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.sync;
+package org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead;
 
 import org.emoflon.ibex.neo.benchmark.util.BenchParameters;
 import org.emoflon.ibex.neo.benchmark.util.ScaleOrientation;
 
-public class ExtType2Doc_LookAhead_Sync_Params extends BenchParameters {
+public class ExtType2Doc_LookAhead_Params extends BenchParameters {
+	
+	public final int horizontal_package_scale;
+	public final int package_hierarchy_depth;
 
-	public ExtType2Doc_LookAhead_Sync_Params(String name, int modelScale, ScaleOrientation scaleOrientation) {
+	public ExtType2Doc_LookAhead_Params(String name, int modelScale, ScaleOrientation scaleOrientation) {
 		super(name, modelScale, scaleOrientation);
+		
+		horizontal_package_scale = 2;
+		package_hierarchy_depth = 1;
 	}
 
-	public ExtType2Doc_LookAhead_Sync_Params(String[] args) {
+	public ExtType2Doc_LookAhead_Params(String[] args) {
 		this( //
 				args[0], // name
 				Integer.valueOf(args[1]), // model scale

@@ -7,15 +7,16 @@ import java.util.function.Function;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.neo.benchmark.ModelAndDeltaGenerator;
 import org.emoflon.ibex.neo.benchmark.SynchronizationBench;
+import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.ExtType2Doc_LookAhead_Params;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.emoflon.ibex.tgg.run.exttype2doc_lookahead.SYNC_App;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
-public class ExtType2Doc_LookAhead_Sync_Bench extends SynchronizationBench<ExtType2Doc_LookAhead_Sync_Params> {
+public class ExtType2Doc_LookAhead_Sync_Bench extends SynchronizationBench<ExtType2Doc_LookAhead_Params> {
 
-	public ExtType2Doc_LookAhead_Sync_Bench(String projectName, ExtType2Doc_LookAhead_Sync_Params parameters) {
+	public ExtType2Doc_LookAhead_Sync_Bench(String projectName, ExtType2Doc_LookAhead_Params parameters) {
 		super(projectName, parameters);
 	}
 
@@ -31,7 +32,7 @@ public class ExtType2Doc_LookAhead_Sync_Bench extends SynchronizationBench<ExtTy
 	}
 
 	@Override
-	protected ModelAndDeltaGenerator<?, ?, ?, ?, ?, ExtType2Doc_LookAhead_Sync_Params> initModelAndDeltaGenerator(Resource s, Resource t, Resource c,
+	protected ModelAndDeltaGenerator<?, ?, ?, ?, ?, ExtType2Doc_LookAhead_Params> initModelAndDeltaGenerator(Resource s, Resource t, Resource c,
 			Resource p, Resource d) {
 		return new ExtType2Doc_LookAhead_Sync_MDGenerator(s, t, c, p, d);
 	}
@@ -50,7 +51,7 @@ public class ExtType2Doc_LookAhead_Sync_Bench extends SynchronizationBench<ExtTy
 	}
 
 	public static void main(String[] args) {
-		ExtType2Doc_LookAhead_Sync_Params params = new ExtType2Doc_LookAhead_Sync_Params(args);
+		ExtType2Doc_LookAhead_Params params = new ExtType2Doc_LookAhead_Params(args);
 		ExtType2Doc_LookAhead_Sync_Bench bench = new ExtType2Doc_LookAhead_Sync_Bench("org.emoflon.ibex-neo-benchmark", params);
 		System.out.println(bench.genAndBench(false));
 	}
