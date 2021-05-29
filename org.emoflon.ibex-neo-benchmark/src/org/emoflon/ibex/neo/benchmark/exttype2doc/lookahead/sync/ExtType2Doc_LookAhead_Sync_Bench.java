@@ -1,7 +1,8 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.sync;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 import org.eclipse.emf.ecore.resource.Resource;
@@ -9,12 +10,16 @@ import org.emoflon.ibex.neo.benchmark.ModelAndDeltaGenerator;
 import org.emoflon.ibex.neo.benchmark.SynchronizationBench;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.ExtType2Doc_LookAhead_Params;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
+import org.emoflon.ibex.tgg.operational.matches.ITGGMatch;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
+import org.emoflon.ibex.tgg.operational.strategies.opt.CO;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
 import org.emoflon.ibex.tgg.run.exttype2doc_lookahead.SYNC_App;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
 public class ExtType2Doc_LookAhead_Sync_Bench extends SynchronizationBench<ExtType2Doc_LookAhead_Params> {
+
+	protected CO co = null;
 
 	public ExtType2Doc_LookAhead_Sync_Bench(String projectName, ExtType2Doc_LookAhead_Params parameters) {
 		super(projectName, parameters);
@@ -28,7 +33,17 @@ public class ExtType2Doc_LookAhead_Sync_Bench extends SynchronizationBench<ExtTy
 			return options;
 		};
 
-		return new SYNC_App(ibexOptions);
+		SYNC_App sync = new SYNC_App(ibexOptions);
+		sync.setUpdatePolicy(matchContainer -> {
+			List<ITGGMatch> matches = new ArrayList<>(matchContainer.getMatches());
+			int randomIndex = (int) (Math.random() * matches.size());
+			return matches.get(randomIndex);
+		});
+
+		co = new CO(sync.getOptions());
+		sync.getOptions().executable(sync);
+
+		return sync;
 	}
 
 	@Override
@@ -40,14 +55,13 @@ public class ExtType2Doc_LookAhead_Sync_Bench extends SynchronizationBench<ExtTy
 	@Override
 	protected int getUsedRAM() {
 		// misused this method to access untranslated elements
-		AtomicInteger numOfTranslatedElts = new AtomicInteger(0);
-		protocol.getContents().forEach(ra -> ra.eCrossReferences().forEach(obj -> {
-			Resource res = obj.eResource();
-			if (res != null && (res.equals(source) || res.equals(target)))
-				numOfTranslatedElts.incrementAndGet();
-		}));
-		double successRate = ((double) numOfTranslatedElts.get()) / ((double) numOfElements);
-		return (int) (successRate * 100);
+		try {
+			co.run();
+			co.terminate();
+			return co.modelsAreConsistent() ? 100 : 0;
+		} catch (IOException e) {
+			return -1;
+		}
 	}
 
 	public static void main(String[] args) {

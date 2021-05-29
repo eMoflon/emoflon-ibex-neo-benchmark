@@ -24,7 +24,7 @@ public class ExtType2Doc_LookAhead_ScaledBenchRunner {
 		case "sync":
 			runner = new ScaledBenchRunner<>( //
 					ExtType2Doc_LookAhead_Sync_Bench.class, ExtType2Doc_LookAhead_Params.class, //
-					Arrays.asList("-Xmx28G"), scaledModel_sync(), 5);
+					Arrays.asList("-Xmx28G"), scaledModel_sync(), 100);
 		default:
 			break;
 		}
