@@ -100,7 +100,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		// SRC
 		rootPackage = createRootPackage("");
 		// TRG
-		rootFolder = createFolder("");
+		rootFolder = createRootFolder("");
 		// CORR
 		Package2Folder p2f = createCorr(cFactory.createPackage2Folder(), rootPackage, rootFolder);
 		// MARKER

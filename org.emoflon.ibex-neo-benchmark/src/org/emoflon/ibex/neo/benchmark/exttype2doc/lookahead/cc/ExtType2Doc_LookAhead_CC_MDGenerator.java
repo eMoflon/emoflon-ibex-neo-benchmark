@@ -47,7 +47,7 @@ public class ExtType2Doc_LookAhead_CC_MDGenerator extends ExtType2Doc_MDGenerato
 		// SRC
 		Package p = createRootPackage(postfix);
 		// TRG
-		Folder f = createFolder(postfix);
+		Folder f = createRootFolder(postfix);
 
 		createPackageAndFolderHierarchies(p, f, 0, postfix);
 	}
@@ -60,11 +60,13 @@ public class ExtType2Doc_LookAhead_CC_MDGenerator extends ExtType2Doc_MDGenerato
 			createPackageAndFolderHierarchy(rootP, rootF, currentDepth, oldPostfix, i);
 	}
 
-	private void createPackageAndFolderHierarchy(Package superP, Folder f, int currentDepth, String oldPostfix, int index) {
+	private void createPackageAndFolderHierarchy(Package superP, Folder superF, int currentDepth, String oldPostfix, int index) {
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
 		Package p = createPackage(postfix, superP);
+		// TRG
+		Folder f = createFolder(postfix, superF);
 
 		createTypesAndDocs(p, f, postfix);
 		createPackageAndFolderHierarchies(p, f, currentDepth + 1, postfix);

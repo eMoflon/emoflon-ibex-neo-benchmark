@@ -74,7 +74,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		// SRC
 		Package p = createRootPackage(postfix);
 		// TRG
-		Folder f = createFolder(postfix);
+		Folder f = createRootFolder(postfix);
 		// CORR
 		Package2Folder p2f = createCorr(cFactory.createPackage2Folder(), p, f);
 		// MARKER

@@ -132,10 +132,19 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		return p;
 	}
 
-	protected Folder createFolder(String postfix) {
+	protected Folder createRootFolder(String postfix) {
 		Folder f = tFactory.createFolder();
 		f.setName("Package" + postfix);
 		f.setContainer(tContainer);
+		name2folder.put(f.getName(), f);
+		numOfElements++;
+		return f;
+	}
+
+	protected Folder createFolder(String postfix, Folder superFolder) {
+		Folder f = tFactory.createFolder();
+		f.setName("Package" + postfix);
+		f.setSuperFolder(superFolder);
 		name2folder.put(f.getName(), f);
 		numOfElements++;
 		return f;
