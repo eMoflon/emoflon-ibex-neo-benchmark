@@ -1,24 +1,17 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.cc;
 
 import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.ibex.neo.benchmark.exttype2doc.ExtType2Doc_MDGenerator;
-import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.ExtType2Doc_LookAhead_Params;
+import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.ExtType2Doc_LookAhead_MDGenerator;
 
 import ExtDocModel.Doc;
 import ExtDocModel.Folder;
-import ExtType2Doc_LookAhead.ExtType2Doc_LookAheadFactory;
 import ExtTypeModel.Package;
 import ExtTypeModel.Type;
 
-public class ExtType2Doc_LookAhead_CC_MDGenerator extends ExtType2Doc_MDGenerator<ExtType2Doc_LookAheadFactory, ExtType2Doc_LookAhead_Params> {
+public class ExtType2Doc_LookAhead_CC_MDGenerator extends ExtType2Doc_LookAhead_MDGenerator {
 
 	public ExtType2Doc_LookAhead_CC_MDGenerator(Resource source, Resource target, Resource corr, Resource protocol, Resource delta) {
 		super(source, target, corr, protocol, delta);
-	}
-
-	@Override
-	protected ExtType2Doc_LookAheadFactory corrFactoryInstance() {
-		return ExtType2Doc_LookAheadFactory.eINSTANCE;
 	}
 
 	//// MODEL ////
@@ -30,10 +23,12 @@ public class ExtType2Doc_LookAhead_CC_MDGenerator extends ExtType2Doc_MDGenerato
 	}
 
 	private void createContainers() {
+		String postfix = SEP + "ROOT";
+		
 		// SRC
-		createProject();
+		createRootPackage(postfix);
 		// TRG
-		createDocContainer();
+		createRootFolder(postfix);
 	}
 
 	private void createPackagesAndFolders() {
@@ -45,9 +40,9 @@ public class ExtType2Doc_LookAhead_CC_MDGenerator extends ExtType2Doc_MDGenerato
 		String postfix = SEP + index;
 
 		// SRC
-		Package p = createRootPackage(postfix);
+		Package p = createPackage(postfix, sContainer);
 		// TRG
-		Folder f = createRootFolder(postfix);
+		Folder f = createFolder(postfix, tContainer);
 
 		createPackageAndFolderHierarchies(p, f, 0, postfix);
 	}
@@ -84,13 +79,6 @@ public class ExtType2Doc_LookAhead_CC_MDGenerator extends ExtType2Doc_MDGenerato
 		Doc superD = createDoc(postfixSuper, f);
 		Doc subD = createDoc(postfixSub, f);
 		createDocLink(superD, subD);
-	}
-
-	//// DELTA ////
-
-	@Override
-	protected void genDelta() {
-		// NO-OP
 	}
 
 }

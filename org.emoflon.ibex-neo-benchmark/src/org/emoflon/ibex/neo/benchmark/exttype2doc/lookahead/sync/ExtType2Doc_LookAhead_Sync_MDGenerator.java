@@ -1,22 +1,15 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.sync;
 
 import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.ibex.neo.benchmark.exttype2doc.ExtType2Doc_MDGenerator;
-import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.ExtType2Doc_LookAhead_Params;
+import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.ExtType2Doc_LookAhead_MDGenerator;
 
-import ExtType2Doc_LookAhead.ExtType2Doc_LookAheadFactory;
 import ExtTypeModel.Package;
 import ExtTypeModel.Type;
 
-public class ExtType2Doc_LookAhead_Sync_MDGenerator extends ExtType2Doc_MDGenerator<ExtType2Doc_LookAheadFactory, ExtType2Doc_LookAhead_Params> {
+public class ExtType2Doc_LookAhead_Sync_MDGenerator extends ExtType2Doc_LookAhead_MDGenerator {
 
 	public ExtType2Doc_LookAhead_Sync_MDGenerator(Resource source, Resource target, Resource corr, Resource protocol, Resource delta) {
 		super(source, target, corr, protocol, delta);
-	}
-
-	@Override
-	protected ExtType2Doc_LookAheadFactory corrFactoryInstance() {
-		return ExtType2Doc_LookAheadFactory.eINSTANCE;
 	}
 
 	//// MODEL ////
@@ -28,8 +21,10 @@ public class ExtType2Doc_LookAhead_Sync_MDGenerator extends ExtType2Doc_MDGenera
 	}
 
 	private void createContainer() {
+		String postfix = SEP + "ROOT";
+
 		// SRC
-		createProject();
+		createRootPackage(postfix);
 	}
 
 	private void createPackages() {
@@ -41,7 +36,7 @@ public class ExtType2Doc_LookAhead_Sync_MDGenerator extends ExtType2Doc_MDGenera
 		String postfix = SEP + index;
 
 		// SRC
-		Package p = createRootPackage(postfix);
+		Package p = createPackage(postfix, sContainer);
 
 		createPackageHierarchies(p, 0, postfix);
 	}
@@ -72,13 +67,6 @@ public class ExtType2Doc_LookAhead_Sync_MDGenerator extends ExtType2Doc_MDGenera
 		Type superT = createType(postfixSuper, false, p);
 		Type subT = createType(postfixSub, false, p);
 		createTypeInheritance(superT, subT);
-	}
-
-	//// DELTA ////
-
-	@Override
-	protected void genDelta() {
-		// NO-OP
 	}
 
 }
