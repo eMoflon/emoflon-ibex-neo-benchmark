@@ -1,5 +1,8 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.concsync;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.emoflon.ibex.neo.benchmark.util.BenchParameters;
 import org.emoflon.ibex.neo.benchmark.util.ScaleOrientation;
 
@@ -17,8 +20,10 @@ public class ExtType2Doc_ConcSync_Params extends BenchParameters {
 
 	public final int num_of_changes;
 	public final double conflict_ratio;
+	public final List<ConflictType> conflict_types;
 
-	public ExtType2Doc_ConcSync_Params(String name, int modelScale, ScaleOrientation scaleOrientation, int numOfChanges, double conflictRatio) {
+	public ExtType2Doc_ConcSync_Params(String name, int modelScale, ScaleOrientation scaleOrientation, //
+			int numOfChanges, double conflictRatio, ConflictType[] conflictTypes) {
 		super(name, modelScale, scaleOrientation);
 
 		switch (scaleOrientation) {
@@ -46,6 +51,7 @@ public class ExtType2Doc_ConcSync_Params extends BenchParameters {
 
 		num_of_changes = numOfChanges;
 		conflict_ratio = conflictRatio;
+		conflict_types = Arrays.asList(conflictTypes);
 	}
 
 	public ExtType2Doc_ConcSync_Params(String[] args) {
@@ -54,7 +60,8 @@ public class ExtType2Doc_ConcSync_Params extends BenchParameters {
 				Integer.valueOf(args[1]), // model scale
 				ScaleOrientation.valueOf(args[2]), // scale orientation
 				Integer.valueOf(args[3]), // number of changes
-				Double.valueOf(args[4]) // conflict ratio
+				Double.valueOf(args[4]), // conflict ratio
+				ConflictType.valuesOf(args[5]) // conflict types
 		);
 	}
 
@@ -65,7 +72,8 @@ public class ExtType2Doc_ConcSync_Params extends BenchParameters {
 				String.valueOf(modelScale), //
 				scaleOrientation.toString(), //
 				String.valueOf(num_of_changes), //
-				String.valueOf(conflict_ratio) //
+				String.valueOf(conflict_ratio), //
+				ConflictType.toTokens(conflict_types) //
 		};
 	}
 
@@ -76,7 +84,8 @@ public class ExtType2Doc_ConcSync_Params extends BenchParameters {
 				"model_scale", //
 				"scale_orientation", //
 				"changes", //
-				"conflicts" //
+				"conflicts", //
+				"conflict_types" //
 		};
 	}
 

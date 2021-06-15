@@ -1,11 +1,14 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.concsync.run;
 
+import static org.emoflon.ibex.neo.benchmark.exttype2doc.concsync.ConflictType.*;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.emoflon.ibex.neo.benchmark.ScaledBenchRunner;
+import org.emoflon.ibex.neo.benchmark.exttype2doc.concsync.ConflictType;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.concsync.ExtType2Doc_ConcSync_Bench;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.concsync.ExtType2Doc_ConcSync_Params;
 import org.emoflon.ibex.neo.benchmark.util.ScaleOrientation;
@@ -46,7 +49,8 @@ public class ExtType2Doc_ConcSync_ScaledBenchRunner {
 					modelSize[i], //
 					ScaleOrientation.HORIZONTAL, //
 					changes, //
-					conflictRatio //
+					conflictRatio, //
+					new ConflictType[] { ATTR, PRES_DEL, CONTR_MOVE } //
 			).serializeInputParameters();
 			scale.add(vars);
 		}

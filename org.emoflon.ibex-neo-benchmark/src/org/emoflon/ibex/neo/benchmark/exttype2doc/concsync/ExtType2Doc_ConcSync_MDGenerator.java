@@ -336,25 +336,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 	@Override
 	protected void genDelta() {
-		List<BiConsumer<Type, Boolean>> deltaFunctions = new LinkedList<>();
-		switch (parameters.scaleOrientation) {
-		case HORIZONTAL:
-			deltaFunctions.add(this::createAttributeConflict);
-			deltaFunctions.add(this::createContradictingMoveConflict);
-			deltaFunctions.add(this::createDeletePreserveConflict_Horizontal);
-
-			if (parameters.num_of_changes > parameters.num_of_root_types)
-				throw new RuntimeException("Too many changes for this model");
-			break;
-		case VERTICAL:
-			deltaFunctions.add(this::createDeletePreserveConflict_Vertical);
-
-			if (parameters.num_of_changes > parameters.inheritance_depth)
-				throw new RuntimeException("Too many changes for this model");
-			break;
-		default:
-			break;
-		}
+		List<BiConsumer<Type, Boolean>> deltaFunctions = fillDeltasFunctionContainer();
 
 		int num_of_conflicts = (int) (parameters.num_of_changes * parameters.conflict_ratio);
 		for (int i = 0; i < parameters.num_of_changes; i++) {
@@ -362,6 +344,49 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 			boolean generateConflict = i <= num_of_conflicts;
 			deltaFunctions.get(deltaIndex).accept(rootTypes.get(i), generateConflict);
 		}
+	}
+
+	private List<BiConsumer<Type, Boolean>> fillDeltasFunctionContainer() {
+		List<BiConsumer<Type, Boolean>> deltaFunctions = new LinkedList<>();
+
+		switch (parameters.scaleOrientation) {
+		case HORIZONTAL:
+			for (ConflictType conflictType : parameters.conflict_types) {
+				switch (conflictType) {
+				case ATTR:
+					deltaFunctions.add(this::createAttributeConflict);
+					break;
+				case CONTR_MOVE:
+					deltaFunctions.add(this::createContradictingMoveConflict);
+					break;
+				case PRES_DEL:
+					deltaFunctions.add(this::createDeletePreserveConflict_Horizontal);
+					break;
+				default:
+					throw new IllegalArgumentException("No support for conflict type '" + conflictType + "' in horizontal scale orientation!");
+				}
+			}
+
+			if (parameters.num_of_changes > parameters.num_of_root_types)
+				throw new RuntimeException("Too many changes for this model");
+			break;
+		case VERTICAL:
+			for (ConflictType conflictType : parameters.conflict_types) {
+				switch (conflictType) {
+				case PRES_DEL:
+					deltaFunctions.add(this::createDeletePreserveConflict_Vertical);
+					break;
+				default:
+					throw new IllegalArgumentException("No support for conflict type '" + conflictType + "' in vertical scale orientation!");
+				}
+			}
+
+			if (parameters.num_of_changes > parameters.inheritance_depth)
+				throw new RuntimeException("Too many changes for this model");
+			break;
+		}
+
+		return deltaFunctions;
 	}
 
 	private void createDeletePreserveConflict_Horizontal(Type t, boolean generateConflict) {
@@ -412,9 +437,9 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 			subT = subT.getInheritsFrom().get(0);
 
 		deleteType(subT, delta);
-		
+
 		Entry newE = createEntry(t.getName().substring(4) + "_new_method", EntryType.METHOD, null);
-		
+
 		createObject(newE, delta);
 		createLink(subD, newE, tPackage.getDoc_Entries(), delta);
 	}
