@@ -53,14 +53,13 @@ public class ExtType2Doc_LookAhead_Sync_Bench extends SynchronizationBench<ExtTy
 	}
 
 	@Override
-	protected int getUsedRAM() {
-		// misused this method to access untranslated elements
+	protected double calcSuccessRate() {
 		try {
 			co.run();
 			co.terminate();
-			return co.modelsAreConsistent() ? 100 : 0;
+			return co.modelsAreConsistent() ? 1.0 : 0.0;
 		} catch (IOException e) {
-			return -1;
+			return -1000;
 		}
 	}
 

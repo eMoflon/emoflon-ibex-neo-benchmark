@@ -35,11 +35,12 @@ public abstract class SynchronizationBench<BP extends BenchParameters> extends I
 		if (saveTransformedModels)
 			opStrat.saveModels();
 
-		int ram = getUsedRAM();
+		int ram = calcUsedRAM();
+		double successRate = calcSuccessRate();
 
 		opStrat.terminate();
 
-		return new BenchEntry<>(parameters, numOfElements, init, resolve, ram);
+		return new BenchEntry<>(parameters, numOfElements, init, resolve, ram, successRate);
 	}
 
 }

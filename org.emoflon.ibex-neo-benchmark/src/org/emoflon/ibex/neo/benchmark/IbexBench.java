@@ -133,7 +133,8 @@ public abstract class IbexBench<OpStrat extends OperationalStrategy, BenchParams
 	protected abstract ModelAndDeltaGenerator<?, ?, ?, ?, ?, BenchParams> initModelAndDeltaGenerator(Resource s, Resource t, Resource c, Resource p,
 			Resource d);
 
-	protected abstract BenchEntry<BenchParams> applyDeltaAndRun(OpStrat opStrat, boolean saveTransformedModels) throws IOException, InvalidDeltaException;
+	protected abstract BenchEntry<BenchParams> applyDeltaAndRun(OpStrat opStrat, boolean saveTransformedModels)
+			throws IOException, InvalidDeltaException;
 
 	private void initResources(OpStrat opStrat) {
 		source = opStrat.getOptions().resourceHandler().getSourceResource();
@@ -176,9 +177,13 @@ public abstract class IbexBench<OpStrat extends OperationalStrategy, BenchParams
 		delta.save(null);
 	}
 
-	protected int getUsedRAM() {
+	protected int calcUsedRAM() {
 		Runtime.getRuntime().gc();
 		return (int) ((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / (1024 * 1024));
+	}
+
+	protected double calcSuccessRate() {
+		return 1.0;
 	}
 
 	public BenchParams getParameters() {

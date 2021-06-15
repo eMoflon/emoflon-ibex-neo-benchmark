@@ -23,11 +23,12 @@ public abstract class ConsistencyCheckBench<BP extends BenchParameters> extends 
 		if (saveTransformedModels)
 			opStrat.saveModels();
 
-		int ram = getUsedRAM();
+		int ram = calcUsedRAM();
+		double successRate = opStrat.modelsAreConsistent() ? 1.0 : 0.0;
 
 		opStrat.terminate();
 
-		return new BenchEntry<>(parameters, numOfElements, 0, resolve, ram);
+		return new BenchEntry<>(parameters, numOfElements, 0, resolve, ram, successRate);
 	}
 
 }

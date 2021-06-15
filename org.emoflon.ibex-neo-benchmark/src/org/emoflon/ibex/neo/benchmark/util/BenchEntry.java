@@ -4,18 +4,20 @@ import java.lang.reflect.Constructor;
 
 public class BenchEntry<BP extends BenchParameters> {
 
-	public BP parameters;
-	public int elts;
-	public double init;
-	public double resolve;
-	public int ram;
+	public final BP parameters;
+	public final int elts;
+	public final double init;
+	public final double resolve;
+	public final int ram;
+	public final double successRate;
 
-	public BenchEntry(BP parameters, int elts, double init, double resolve, int ram) {
+	public BenchEntry(BP parameters, int elts, double init, double resolve, int ram, double successRate) {
 		this.parameters = parameters;
 		this.elts = elts;
 		this.init = init;
 		this.resolve = resolve;
 		this.ram = ram;
+		this.successRate = successRate;
 	}
 
 	public BenchEntry(String args, Class<BP> clazz) throws Exception {
@@ -27,15 +29,16 @@ public class BenchEntry<BP extends BenchParameters> {
 		Constructor<BP> constructor = clazz.getConstructor(String[].class);
 
 		this.parameters = constructor.newInstance(new Object[] { splitted });
-		this.elts = Integer.parseInt(splitted[splitted.length - 4]);
-		this.init = Double.parseDouble(splitted[splitted.length - 3]);
-		this.resolve = Double.parseDouble(splitted[splitted.length - 2]);
-		this.ram = Integer.parseInt(splitted[splitted.length - 1]);
+		this.elts = Integer.parseInt(splitted[splitted.length - 5]);
+		this.init = Double.parseDouble(splitted[splitted.length - 4]);
+		this.resolve = Double.parseDouble(splitted[splitted.length - 3]);
+		this.ram = Integer.parseInt(splitted[splitted.length - 2]);
+		this.successRate = Double.parseDouble(splitted[splitted.length - 1]);
 	}
 
 	@Override
 	public String toString() {
-		return String.join(";", parameters.serializeInputParameters()) + ";" + elts + ";" + init + ";" + resolve + ";" + ram;
+		return String.join(";", parameters.serializeInputParameters()) + ";" + elts + ";" + init + ";" + resolve + ";" + ram + ";" + successRate;
 	}
 
 }
