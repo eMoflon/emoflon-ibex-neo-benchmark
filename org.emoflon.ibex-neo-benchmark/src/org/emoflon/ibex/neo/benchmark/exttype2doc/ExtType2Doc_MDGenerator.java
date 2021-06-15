@@ -254,8 +254,10 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 
 		deleteObject(type, delta);
 		deleteLink(type.getPackage(), type, sPackage.getPackage_Types(), delta);
-		for (Type subT : type.getExtendedBy())
+		for (Type subT : type.getExtendedBy()) {
 			deleteLink(type, subT, sPackage.getType_ExtendedBy(), delta);
+			deleteType(subT, delta);
+		}
 	}
 
 	protected void deleteMethod(Method method, Delta delta) {
