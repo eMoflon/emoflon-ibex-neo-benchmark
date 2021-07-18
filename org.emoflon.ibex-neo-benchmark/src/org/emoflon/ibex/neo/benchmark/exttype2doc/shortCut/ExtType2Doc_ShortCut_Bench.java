@@ -23,7 +23,7 @@ public class ExtType2Doc_ShortCut_Bench extends SynchronizationBench<ExtType2Doc
 		Function<IbexOptions, IbexOptions> ibexOptions = options -> {
 			options.resourceHandler(resourceHandler);
 			options.ilpSolver(SupportedILPSolver.Sat4J);
-			options.propagate.usePrecedenceGraph(true);
+			options.propagate.usePrecedenceGraph(false);
 			options.repair.useShortcutRules(true);
 			options.repair.advancedOverlapStrategies(false);
 			options.repair.relaxedSCPatternMatching(true);

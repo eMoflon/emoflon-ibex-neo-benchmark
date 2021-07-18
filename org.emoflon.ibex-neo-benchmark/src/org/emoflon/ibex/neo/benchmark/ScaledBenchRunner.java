@@ -4,9 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.emoflon.ibex.neo.benchmark.util.BenchContainer;
 import org.emoflon.ibex.neo.benchmark.util.BenchEntry;
@@ -14,6 +17,12 @@ import org.emoflon.ibex.neo.benchmark.util.BenchParameters;
 
 public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParameters> {
 
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss");
+	
+	private final static int MAX_TIMEOUTS = 5;
+	private final static int MAX_EXCEPTIONS = 5;
+	private final static int TIMEOUT_MINUTES = 10;
+	
 	protected final Class<B> benchClass;
 	protected final Class<BP> paramsClass;
 	protected final List<String> jvmArgs;
@@ -32,14 +41,38 @@ public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParam
 		BenchContainer<BP> benchCont = new BenchContainer<>();
 
 		for (String[] args : this.execArgs) {
+			int timeoutCounter = 0;
+			int exceptionCounter = 0;
 			for (int r = 0; r < this.repetitions; r++) {
+				
+				if(timeoutCounter >= MAX_TIMEOUTS) {
+					System.out.println("Timeout for " + Arrays.asList(args));
+					break;
+				}
+				
+				if(exceptionCounter >= MAX_EXCEPTIONS) {
+					System.out.println("Too many exceptions for " + Arrays.asList(args));
+					break;
+				}
+				
 				Process process = execute(this.benchClass, jvmArgs, Arrays.asList(args));
-				process.waitFor();
-				process.exitValue();
-
 				InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
 				BufferedReader reader = new BufferedReader(inputStreamReader);
-
+				
+				if(!process.waitFor(TIMEOUT_MINUTES, TimeUnit.MINUTES)) {
+					// count timeouts and restart repetition
+					timeoutCounter++;
+					r--;
+					continue;
+				}
+				
+				if(process.exitValue() != 0) {
+					// count exceptions and restart repetition if one is detected
+					exceptionCounter++;
+					r--;
+					continue;
+				}
+				
 				StringBuilder b = new StringBuilder();
 				String read = reader.readLine();
 				while (read != null) {
@@ -53,6 +86,11 @@ public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParam
 
 				System.out.println(benchEntry);
 			}
+			
+			if(timeoutCounter >= MAX_TIMEOUTS || exceptionCounter >= MAX_EXCEPTIONS) {
+				// also step out of the outer for loop
+				break;
+			}
 		}
 
 		benchCont.print();
@@ -63,6 +101,17 @@ public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParam
 		String javaBin = javaHome + File.separator + "bin" + File.separator + "java";
 		String classpath = System.getProperty("java.class.path");
 		String className = clazz.getName();
+		
+		// create log file and redirect the error stream to it
+		String logFolderPath = clazz.getProtectionDomain().getCodeSource().getLocation().getPath().toString().replace("bin/", "") + "log/";
+		File logFolder = new File(logFolderPath);
+		logFolder.mkdirs();
+		Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+		File logFile = new File(logFolderPath + "log_" + args + DATE_FORMAT.format(timestamp) + ".txt");
+		if(!logFile.exists())
+			logFile.createNewFile();
+	        
+		
 		List<String> command = new ArrayList<>();
 		command.add(javaBin);
 		command.addAll(jvmArgs);
@@ -71,6 +120,8 @@ public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParam
 		command.add(className);
 		command.addAll(args);
 		ProcessBuilder builder = new ProcessBuilder(command);
+		builder.redirectErrorStream(true);
+		builder.redirectOutput(logFile);
 		Process process = builder.start();
 		return process;
 	}

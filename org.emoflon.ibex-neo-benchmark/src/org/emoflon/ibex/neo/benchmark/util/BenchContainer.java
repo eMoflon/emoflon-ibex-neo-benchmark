@@ -21,6 +21,11 @@ public class BenchContainer<BP extends BenchParameters> {
 			break;
 		}
 
+		if(bp == null) {
+			System.out.println("No measurements found! Aborting...");
+			return;
+		}
+		
 		System.out.println();
 		System.out.println(String.join(";", bp.getInputParameterNames())
 				+ ";elts;avg_init;median_init;avg_resolve;median_resolve;avg_ram;median_ram;success_rate");
