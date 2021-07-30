@@ -17,7 +17,9 @@ public class ExtType2Doc_ShortCut_Params extends BenchParameters {
 	public final int num_of_parameters;
 	public final ShortCutDelta delta_type;
 
-	public ExtType2Doc_ShortCut_Params(String name, int modelScale, ScaleOrientation scaleOrientation, ShortCutDelta deltaType) {
+	public final int num_of_changes;
+	
+	public ExtType2Doc_ShortCut_Params(String name, int modelScale, ScaleOrientation scaleOrientation, int numOfChanges, ShortCutDelta deltaType) {
 		super(name, modelScale, scaleOrientation);
 
 		switch (scaleOrientation) {
@@ -42,6 +44,7 @@ public class ExtType2Doc_ShortCut_Params extends BenchParameters {
 		num_of_methods = 3;
 		num_of_parameters = 2;
 
+		num_of_changes = numOfChanges;
 		delta_type = deltaType;
 	}
 
@@ -50,7 +53,8 @@ public class ExtType2Doc_ShortCut_Params extends BenchParameters {
 				args[0], // name
 				Integer.valueOf(args[1]), // model scale
 				ScaleOrientation.valueOf(args[2]), // scale orientation
-				ShortCutDelta.valueOf(args[3]) // short-cut delta type
+				Integer.valueOf(args[3]), // number of changes
+				ShortCutDelta.valueOf(args[4]) // short-cut delta type
 		);
 	}
 
@@ -60,6 +64,7 @@ public class ExtType2Doc_ShortCut_Params extends BenchParameters {
 				name, //
 				String.valueOf(modelScale), //
 				scaleOrientation.toString(), //
+				String.valueOf(num_of_changes), //
 				delta_type.toString() //
 		};
 	}
@@ -70,6 +75,7 @@ public class ExtType2Doc_ShortCut_Params extends BenchParameters {
 				"name", //
 				"model_scale", //
 				"scale_orientation", //
+				"num_of_changes", //
 				"delta_type" //
 		};
 	}

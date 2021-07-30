@@ -1,6 +1,8 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.shortCut;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.ExtType2Doc_MDGenerator;
 
 import ExtDocModel.Doc;
@@ -60,7 +62,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCREATE__SRC__pr(sContainer);
 		marker.setCREATE__CORR__pr2dc(pr2dc);
 		marker.setCREATE__TRG__dc(tContainer);
-		protocol.getContents().add(marker);
+		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 	}
 
 	private void createPackageAndFolderHierarchies() {
@@ -85,7 +87,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCONTEXT__SRC__pr(sContainer);
 		marker.setCONTEXT__CORR__pr2dc((Project2DocContainer) src2corr.get(sContainer));
 		marker.setCONTEXT__TRG__dc(tContainer);
-		protocol.getContents().add(marker);
+		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 
 		if (parameters.horizontal_package_scales.length != 0)
 			createPackageAndFolderHierarchies(p, f, 0, postfix);
@@ -113,7 +115,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCONTEXT__SRC__p(superP);
 		marker.setCONTEXT__CORR__p2f((Package2Folder) src2corr.get(superP));
 		marker.setCONTEXT__TRG__f(f);
-		protocol.getContents().add(marker);
+		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 
 		if (currentDepth < parameters.types_for_packages.length && parameters.types_for_packages[currentDepth])
 			createTypeAndDocHierarchies(p, f, postfix);
@@ -143,7 +145,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCREATE__SRC__t(t);
 		marker.setCREATE__CORR__t2d(t2d);
 		marker.setCREATE__TRG__d(d);
-		protocol.getContents().add(marker);
+		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 
 		createMethodsAndEntries(t, d, postfix);
 		createFieldsAndEntries(t, d, postfix);
@@ -181,7 +183,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCREATE__SRC__nt(t);
 		marker.setCREATE__CORR__nt2nd(t2d);
 		marker.setCREATE__TRG__nd(d);
-		protocol.getContents().add(marker);
+		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 
 		createMethodsAndEntries(t, d, postfix);
 		createFieldsAndEntries(t, d, postfix);
@@ -221,7 +223,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCREATE__SRC__m(m);
 		marker.setCREATE__CORR__m2e(m2e);
 		marker.setCREATE__TRG__e(e);
-		protocol.getContents().add(marker);
+		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 
 		createParameters(m, e, postfix);
 	}
@@ -248,7 +250,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCREATE__SRC__f(f);
 		marker.setCREATE__CORR__f2e(f2e);
 		marker.setCREATE__TRG__e(e);
-		protocol.getContents().add(marker);
+		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 	}
 
 	private void createParameters(Method m, Entry e, String oldPostfix) {
@@ -270,13 +272,14 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCONTEXT__TRG__e(e);
 		marker.setCREATE__SRC__p(p);
 		marker.setCREATE__CORR__p2e(p2e);
-		protocol.getContents().add(marker);
+		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 	}
 
 	//// DELTA ////
 
 	@Override
 	protected void genDelta() {
+		int deltaCount = 0;
 		for (Package p : sContainer.getRootPackages()) {
 			switch (parameters.delta_type) {
 			case CREATE_ROOT:
@@ -288,13 +291,17 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 			case MOVE_TYPE_ROOT:
 				moveTypeRoot(p);
 				break;
-			case MOVE_TYPE_LEAVE:
+			case MOVE_TYPE_LEAF:
 				moveTypeLeave(p);
 				break;
 			case CREATE_TYPE_ROOT:
 				createTypeRoot(p);
 			default:
 				break;
+			}
+			deltaCount++;
+			if(deltaCount >= parameters.num_of_changes) {
+				return;
 			}
 		}
 	}

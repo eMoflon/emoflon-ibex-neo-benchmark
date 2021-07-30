@@ -6,6 +6,9 @@ import java.util.function.Function;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.neo.benchmark.ModelAndDeltaGenerator;
 import org.emoflon.ibex.neo.benchmark.SynchronizationBench;
+import org.emoflon.ibex.tgg.operational.benchmark.BenchmarkLogger;
+import org.emoflon.ibex.tgg.operational.benchmark.FullBenchmarkLogger;
+import org.emoflon.ibex.tgg.operational.benchmark.TimeRegistry;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
 import org.emoflon.ibex.tgg.operational.strategies.sync.SYNC;
@@ -14,6 +17,8 @@ import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
 public class ExtType2Doc_ShortCut_Bench extends SynchronizationBench<ExtType2Doc_ShortCut_Params> {
 
+	private static BenchmarkLogger logger = new FullBenchmarkLogger();
+	
 	public ExtType2Doc_ShortCut_Bench(String projectName, ExtType2Doc_ShortCut_Params parameters) {
 		super(projectName, parameters);
 	}
@@ -23,12 +28,14 @@ public class ExtType2Doc_ShortCut_Bench extends SynchronizationBench<ExtType2Doc
 		Function<IbexOptions, IbexOptions> ibexOptions = options -> {
 			options.resourceHandler(resourceHandler);
 			options.ilpSolver(SupportedILPSolver.Sat4J);
-			options.propagate.usePrecedenceGraph(false);
+			options.propagate.usePrecedenceGraph(true);
 			options.repair.useShortcutRules(true);
 			options.repair.advancedOverlapStrategies(false);
 			options.repair.relaxedSCPatternMatching(true);
 			options.repair.omitUnnecessaryContext(true);
 			options.repair.disableInjectivity(true);
+			options.propagate.applyConcurrently(true);
+			options.debug.benchmarkLogger(logger);
 			return options;
 		};
 		return new SYNC_App(ibexOptions);
@@ -44,6 +51,8 @@ public class ExtType2Doc_ShortCut_Bench extends SynchronizationBench<ExtType2Doc
 		ExtType2Doc_ShortCut_Params params = new ExtType2Doc_ShortCut_Params(args);
 		ExtType2Doc_ShortCut_Bench bench = new ExtType2Doc_ShortCut_Bench("org.emoflon.ibex-neo-benchmark", params);
 		System.out.println(bench.genAndBench(false));
+//		System.out.println(logger);
+//		TimeRegistry.logTimes();
 	}
 
 }
