@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+        <listEntry value="/org.emoflon.ibex-neo-benchmark/src/org/emoflon/ibex/neo/benchmark/exttype2doc/shortCut/run/ExtType2Doc_ShortCut_ScaledModelBenchRunner.java"/>
+    </listAttribute>
+    <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+        <listEntry value="1"/>
+    </listAttribute>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_ATTR_USE_ARGFILE" value="false"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_EXCLUDE_TEST_CODE" value="true"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_SHOW_CODEDETAILS_IN_EXCEPTION_MESSAGES" value="true"/>
+    <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_CLASSPATH_ONLY_JAR" value="false"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.emoflon.ibex.neo.benchmark.exttype2doc.shortCut.run.ExtType2Doc_ShortCut_ScaledModelBenchRunner"/>
+    <stringAttribute key="org.eclipse.jdt.launching.MODULE_NAME" value="org.emoflon.ibex-neo-benchmark"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="MOVE_TYPE_ROOT"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="org.emoflon.ibex-neo-benchmark"/>
+</launchConfiguration>
