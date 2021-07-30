@@ -6,6 +6,7 @@ import java.util.Map;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.neo.benchmark.ModelAndDeltaGenerator;
 import org.emoflon.ibex.neo.benchmark.util.BenchParameters;
 
@@ -117,7 +118,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	protected Package createRootPackage(String postfix) {
 		Package p = sFactory.createPackage();
 		p.setName("Package" + postfix);
-		p.setProject(sContainer);
+		((InternalEList<Package>) sContainer.getRootPackages()).addUnique(p);
 		name2package.put(p.getName(), p);
 		numOfElements++;
 		return p;
@@ -126,7 +127,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	protected Package createPackage(String postfix, Package superPackage) {
 		Package p = sFactory.createPackage();
 		p.setName("Package" + postfix);
-		p.setSuperPackage(superPackage);
+		((InternalEList<Package>) superPackage.getSubPackages()).addUnique(p);
 		name2package.put(p.getName(), p);
 		numOfElements++;
 		return p;
@@ -135,7 +136,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	protected Folder createRootFolder(String postfix) {
 		Folder f = tFactory.createFolder();
 		f.setName("Package" + postfix);
-		f.setContainer(tContainer);
+		((InternalEList<Folder>) tContainer.getFolders()).addUnique(f);
 		name2folder.put(f.getName(), f);
 		numOfElements++;
 		return f;
@@ -144,7 +145,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	protected Folder createFolder(String postfix, Folder superFolder) {
 		Folder f = tFactory.createFolder();
 		f.setName("Package" + postfix);
-		f.setSuperFolder(superFolder);
+		((InternalEList<Folder>) superFolder.getSubFolder()).addUnique(f);
 		name2folder.put(f.getName(), f);
 		numOfElements++;
 		return f;
@@ -154,7 +155,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		Type t = sFactory.createType();
 		t.setName("Type" + postfix);
 		t.setInterface(isInterface);
-		t.setPackage(p);
+		((InternalEList<Type>) p.getTypes()).addUnique(t);
 		name2type.put(t.getName(), t);
 		numOfElements++;
 		return t;
@@ -163,24 +164,25 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	protected Doc createDoc(String postfix, Folder f) {
 		Doc d = tFactory.createDoc();
 		d.setName("Type" + postfix);
-		d.setFolder(f);
+		((InternalEList<Doc>) f.getDocs()).addUnique(d);
+
 		name2doc.put(d.getName(), d);
 		numOfElements++;
 		return d;
 	}
 
 	protected void createTypeInheritance(Type extendee, Type extender) {
-		extendee.getExtendedBy().add(extender);
+		((InternalEList<Type>) extendee.getExtendedBy()).addUnique(extender);
 	}
 
 	protected void createDocLink(Doc superDoc, Doc subDoc) {
-		superDoc.getSubDocs().add(subDoc);
+		((InternalEList<Doc>) superDoc.getSubDocs()).addUnique(subDoc);
 	}
 
 	protected Method createMethod(String postfix, Type t) {
 		Method m = sFactory.createMethod();
 		m.setName("Method" + postfix);
-		m.setType(t);
+		((InternalEList<Method>) t.getMethods()).addUnique(m);
 		name2method.put(m.getName(), m);
 		numOfElements++;
 		return m;
@@ -189,7 +191,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	protected Field createField(String postfix, Type t) {
 		Field f = sFactory.createField();
 		f.setName("Field" + postfix);
-		f.setType(t);
+		((InternalEList<Field>) t.getFields()).addUnique(f);
 		name2field.put(f.getName(), f);
 		numOfElements++;
 		return f;
@@ -200,7 +202,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		String name = entryType == EntryType.METHOD ? "Method" : "Field";
 		e.setName(name + postfix);
 		e.setType(entryType);
-		e.setDoc(d);
+		((InternalEList<Entry>) d.getEntries()).addUnique(e);
 		name2entry.put(e.getName(), e);
 		numOfElements++;
 		return e;
@@ -209,7 +211,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	protected Parameter createParameter(String postfix, Method m) {
 		Parameter p = sFactory.createParameter();
 		p.setName("Param" + postfix);
-		p.setMethod(m);
+		((InternalEList<Parameter>) m.getParams()).addUnique(p);
 		name2param.put(p.getName(), p);
 		numOfElements++;
 		return p;
@@ -218,7 +220,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	protected JavaDoc createJavaDoc(String postfix, Method m) {
 		JavaDoc jd = sFactory.createJavaDoc();
 		jd.setComment("JavaDoc" + postfix);
-		jd.setMethod(m);
+		((InternalEList<JavaDoc>) m.getDocs()).addUnique(jd);
 		name2javadoc.put(jd.getComment(), jd);
 		numOfElements++;
 		return jd;
@@ -227,7 +229,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	protected Annotation createAnnotation(String postfix, Entry e) {
 		Annotation a = tFactory.createAnnotation();
 		a.setValue("JavaDoc" + postfix);
-		a.setEntry(e);
+		((InternalEList<Annotation>) e.getAnnotations()).addUnique(a);
 		name2annotation.put(a.getValue(), a);
 		numOfElements++;
 		return a;
@@ -237,13 +239,14 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		GlossaryEntry ge = tFactory.createGlossaryEntry();
 		ge.setName("GlossaryEntry" + postfix);
 		ge.setGlossary(tContainer.getGlossary());
+		((InternalEList<GlossaryEntry>) tContainer.getGlossary().getEntries()).addUnique(ge);
 		name2glossaryEntry.put(ge.getName(), ge);
 		numOfElements++;
 		return ge;
 	}
 
 	protected void createGlossaryLink(Entry entry, GlossaryEntry glossaryEntry) {
-		entry.getGlossaryEntries().add(glossaryEntry);
+		((InternalEList<GlossaryEntry>) entry.getGlossaryEntries()).addUnique(glossaryEntry);
 	}
 
 	//// DELTA ////
