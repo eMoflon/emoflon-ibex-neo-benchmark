@@ -6,8 +6,10 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.neo.benchmark.util.BenchParameters;
 
+import ExtTypeModel.Package;
 import delta.AttributeDelta;
 import delta.Delta;
 import delta.DeltaContainer;
@@ -79,7 +81,7 @@ public abstract class ModelAndDeltaGenerator<CorrFactory extends EFactory, //
 	}
 
 	protected <Corr extends EObject> Corr createCorr(Corr corr, EObject src, EObject trg) {
-		this.corr.getContents().add(corr);
+		((InternalEList<EObject>) this.corr.getContents()).addUnique(corr);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
 		return corr;

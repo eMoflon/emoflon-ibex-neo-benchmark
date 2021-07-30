@@ -10,32 +10,38 @@ import org.emoflon.ibex.neo.benchmark.exttype2doc.shortCut.ExtType2Doc_ShortCut_
 import org.emoflon.ibex.neo.benchmark.exttype2doc.shortCut.ShortCutDelta;
 import org.emoflon.ibex.neo.benchmark.util.ScaleOrientation;
 
-public class ExtType2Doc_ShortCut_ScaledBenchRunner {
+public abstract class ExtType2Doc_ShortCut_ScaledModelBenchRunner {
 
 	public static void main(String[] args) throws Exception {
-		List<String[]> execArgs = scaledModel_differentDeltas();
+		List<String[]> execArgs = scaledModel_differentDeltas(ShortCutDelta.valueOf(args[0]));
 
 		ScaledBenchRunner<ExtType2Doc_ShortCut_Bench, ExtType2Doc_ShortCut_Params> runner = new ScaledBenchRunner<>( //
 				ExtType2Doc_ShortCut_Bench.class, ExtType2Doc_ShortCut_Params.class, //
-				Arrays.asList("-Xmx28G"), execArgs, 20);
+				Arrays.asList("-Xmx110G"), execArgs, 5);
 		runner.run();
 	}
 
-	private static List<String[]> scaledModel_differentDeltas() {
+	private static List<String[]> scaledModel_differentDeltas(ShortCutDelta delta) {
 		int[] modelSize = { //
-				100, 200, 300, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000 //
+				100, 200, 300, 400, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000 //
+				//10, 25 , 50
 		};
-		ShortCutDelta[] delta = ShortCutDelta.values();
-
+		
+		int[] num_of_changes = { //
+				50//
+		}; // 
+		
+		
 		List<String[]> scale = new LinkedList<>();
 
-		for (int i = 0; i < delta.length; i++) {
+		for (int i = 0; i < num_of_changes.length; i++) {
 			for (int j = 0; j < modelSize.length; j++) {
 				String[] vars = new ExtType2Doc_ShortCut_Params( //
-						"scaledModel_differentDeltas", //
+						"scaledModel_" + delta.name(), //
 						modelSize[j], //
 						ScaleOrientation.HORIZONTAL, //
-						delta[i] //
+						num_of_changes[i], //
+						delta //
 				).serializeInputParameters();
 				scale.add(vars);
 			}

@@ -28,6 +28,7 @@ public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParam
 	protected final List<String> jvmArgs;
 	protected final List<String[]> execArgs;
 	protected final int repetitions;
+	private File currentLogFile;
 
 	public ScaledBenchRunner(Class<B> benchClass, Class<BP> paramsClass, List<String> jvmArgs, List<String[]> execArgs, int repetitions) {
 		this.benchClass = benchClass;
@@ -46,7 +47,7 @@ public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParam
 			for (int r = 0; r < this.repetitions; r++) {
 				
 				if(timeoutCounter >= MAX_TIMEOUTS) {
-					System.out.println("Timeout for " + Arrays.asList(args));
+					System.out.println("Timeout (" + TIMEOUT_MINUTES + "min) for " + Arrays.asList(args));
 					break;
 				}
 				
@@ -71,6 +72,11 @@ public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParam
 					exceptionCounter++;
 					r--;
 					continue;
+				}
+				
+				// clean up log file if it is empty
+				if(currentLogFile.length() == 0) {
+					currentLogFile.delete();
 				}
 				
 				StringBuilder b = new StringBuilder();
@@ -110,6 +116,7 @@ public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParam
 		File logFile = new File(logFolderPath + "log_" + args + DATE_FORMAT.format(timestamp) + ".txt");
 		if(!logFile.exists())
 			logFile.createNewFile();
+		currentLogFile = logFile;
 	        
 		
 		List<String> command = new ArrayList<>();
@@ -120,8 +127,7 @@ public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParam
 		command.add(className);
 		command.addAll(args);
 		ProcessBuilder builder = new ProcessBuilder(command);
-		builder.redirectErrorStream(true);
-		builder.redirectOutput(logFile);
+		builder.redirectError(logFile);
 		Process process = builder.start();
 		return process;
 	}
