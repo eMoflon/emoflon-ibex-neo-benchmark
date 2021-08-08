@@ -1,5 +1,9 @@
 package org.emoflon.ibex.neo.benchmark;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EFactory;
 import org.eclipse.emf.ecore.EObject;
@@ -24,6 +28,9 @@ public abstract class ModelAndDeltaGenerator<CorrFactory extends EFactory, //
 
 	public final String SEP = "_";
 
+	protected Collection<EObject> markers = Collections.synchronizedList(new LinkedList<>());
+	protected Collection<EObject> corrs = Collections.synchronizedList(new LinkedList<>());
+	
 	protected final Resource source;
 	protected final Resource target;
 	protected final Resource corr;
@@ -81,10 +88,16 @@ public abstract class ModelAndDeltaGenerator<CorrFactory extends EFactory, //
 	}
 
 	protected <Corr extends EObject> Corr createCorr(Corr corr, EObject src, EObject trg) {
-		((InternalEList<EObject>) this.corr.getContents()).addUnique(corr);
+//		((InternalEList<EObject>) this.corr.getContents()).addUnique(corr);
+		corrs.add(corr);
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
 		return corr;
+	}
+	
+	protected <Marker extends EObject> Marker createMarker(Marker marker) {
+		markers.add(marker);
+		return marker;
 	}
 
 	//// DELTA ////

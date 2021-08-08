@@ -118,7 +118,6 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	protected Package createRootPackage(String postfix) {
 		Package p = sFactory.createPackage();
 		p.setName("Package" + postfix);
-		((InternalEList<Package>) sContainer.getRootPackages()).addUnique(p);
 		name2package.put(p.getName(), p);
 		numOfElements++;
 		return p;
@@ -136,7 +135,6 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	protected Folder createRootFolder(String postfix) {
 		Folder f = tFactory.createFolder();
 		f.setName("Package" + postfix);
-		((InternalEList<Folder>) tContainer.getFolders()).addUnique(f);
 		name2folder.put(f.getName(), f);
 		numOfElements++;
 		return f;

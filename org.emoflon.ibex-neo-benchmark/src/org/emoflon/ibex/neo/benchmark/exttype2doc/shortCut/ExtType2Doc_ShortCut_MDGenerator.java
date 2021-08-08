@@ -1,9 +1,15 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.shortCut;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.stream.IntStream;
+
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.ExtType2Doc_MDGenerator;
+import org.moflon.smartemf.persistence.SmartEMFResource;
 
 import ExtDocModel.Doc;
 import ExtDocModel.Entry;
@@ -33,6 +39,9 @@ import delta.Delta;
 
 public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<ExtType2Doc_ShortCutFactory, ExtType2Doc_ShortCut_Params> {
 
+	private Collection<Package> rootPackages = Collections.synchronizedList(new LinkedList<>());
+	private Collection<Folder> rootFolders = Collections.synchronizedList(new LinkedList<>());
+	
 	public ExtType2Doc_ShortCut_MDGenerator(Resource source, Resource target, Resource corr, Resource protocol, Resource delta) {
 		super(source, target, corr, protocol, delta);
 	}
@@ -46,8 +55,10 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 	@Override
 	protected void genModels() {
+//		long tic = System.currentTimeMillis();
 		createContainers();
 		createPackageAndFolderHierarchies();
+//		System.out.println("Generation took " + ((double) (System.currentTimeMillis() - tic)) / 1000  + "s");
 	}
 
 	private void createContainers() {
@@ -58,16 +69,24 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		// CORR
 		Project2DocContainer pr2dc = createCorr(cFactory.createProject2DocContainer(), sContainer, tContainer);
 		// MARKER
-		Project2DocCont__Marker marker = cFactory.createProject2DocCont__Marker();
+		Project2DocCont__Marker marker = createMarker(cFactory.createProject2DocCont__Marker());
 		marker.setCREATE__SRC__pr(sContainer);
 		marker.setCREATE__CORR__pr2dc(pr2dc);
 		marker.setCREATE__TRG__dc(tContainer);
-		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 	}
 
 	private void createPackageAndFolderHierarchies() {
-		for (int i = 0; i < parameters.num_of_root_packages; i++)
-			createRootPackageAndFolder(i);
+		IntStream.range(0, parameters.num_of_root_packages).parallel().forEach(this::createRootPackageAndFolder);
+		((InternalEList<Package>) sContainer.getRootPackages()).addAllUnique(rootPackages);
+		((InternalEList<Folder>) tContainer.getFolders()).addAllUnique(rootFolders);
+		if(corr instanceof SmartEMFResource) {
+			corr.getContents().addAll(corrs);
+			protocol.getContents().addAll(markers);
+		}
+		else {
+			((InternalEList<EObject>) corr.getContents()).addAllUnique(corrs);
+			((InternalEList<EObject>) protocol.getContents()).addAllUnique(markers);
+		}
 	}
 
 	private void createRootPackageAndFolder(int index) {
@@ -75,19 +94,22 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 		// SRC
 		Package p = createRootPackage(postfix);
+		rootPackages.add(p);
+		
 		// TRG
 		Folder f = createRootFolder(postfix);
+		rootFolders.add(f);
+		
 		// CORR
 		Package2Folder p2f = createCorr(cFactory.createPackage2Folder(), p, f);
 		// MARKER
-		Package2Folder__Marker marker = cFactory.createPackage2Folder__Marker();
+		Package2Folder__Marker marker = createMarker(cFactory.createPackage2Folder__Marker());
 		marker.setCREATE__SRC__p(p);
 		marker.setCREATE__CORR__p2f(p2f);
 		marker.setCREATE__TRG__f(f);
 		marker.setCONTEXT__SRC__pr(sContainer);
 		marker.setCONTEXT__CORR__pr2dc((Project2DocContainer) src2corr.get(sContainer));
 		marker.setCONTEXT__TRG__dc(tContainer);
-		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 
 		if (parameters.horizontal_package_scales.length != 0)
 			createPackageAndFolderHierarchies(p, f, 0, postfix);
@@ -101,7 +123,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 			createPackageAndFolderHierarchy(rootP, rootF, currentDepth, oldPostfix, i);
 	}
 
-	private void createPackageAndFolderHierarchy(Package superP, Folder f, int currentDepth, String oldPostfix, int index) {
+	private Package createPackageAndFolderHierarchy(Package superP, Folder f, int currentDepth, String oldPostfix, int index) {
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
@@ -109,18 +131,18 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		// CORR
 		Package2Folder p2f = createCorr(cFactory.createPackage2Folder(), p, f);
 		// MARKER
-		SubPackage2Folder__Marker marker = cFactory.createSubPackage2Folder__Marker();
+		SubPackage2Folder__Marker marker = createMarker(cFactory.createSubPackage2Folder__Marker());
 		marker.setCREATE__SRC__sp(p);
 		marker.setCREATE__CORR__sp2f(p2f);
 		marker.setCONTEXT__SRC__p(superP);
 		marker.setCONTEXT__CORR__p2f((Package2Folder) src2corr.get(superP));
 		marker.setCONTEXT__TRG__f(f);
-		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 
 		if (currentDepth < parameters.types_for_packages.length && parameters.types_for_packages[currentDepth])
 			createTypeAndDocHierarchies(p, f, postfix);
 
 		createPackageAndFolderHierarchies(p, f, currentDepth + 1, postfix);
+		return p;
 	}
 
 	private void createTypeAndDocHierarchies(Package p, Folder f, String oldPostfix) {
@@ -138,14 +160,13 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		// CORR
 		Type2Doc t2d = createCorr(cFactory.createType2Doc(), t, d);
 		// MARKER
-		Type2Doc__Marker marker = cFactory.createType2Doc__Marker();
+		Type2Doc__Marker marker = createMarker(cFactory.createType2Doc__Marker());
 		marker.setCONTEXT__SRC__p(p);
 		marker.setCONTEXT__CORR__p2f((Package2Folder) src2corr.get(p));
 		marker.setCONTEXT__TRG__f(f);
 		marker.setCREATE__SRC__t(t);
 		marker.setCREATE__CORR__t2d(t2d);
 		marker.setCREATE__TRG__d(d);
-		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 
 		createMethodsAndEntries(t, d, postfix);
 		createFieldsAndEntries(t, d, postfix);
@@ -173,7 +194,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		// CORR
 		Type2Doc t2d = createCorr(cFactory.createType2Doc(), t, d);
 		// MARKER
-		ExtendingType2Doc__Marker marker = cFactory.createExtendingType2Doc__Marker();
+		ExtendingType2Doc__Marker marker = createMarker(cFactory.createExtendingType2Doc__Marker());
 		marker.setCONTEXT__SRC__p(p);
 		marker.setCONTEXT__CORR__p2f((Package2Folder) src2corr.get(p));
 		marker.setCONTEXT__TRG__f(f);
@@ -183,7 +204,6 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCREATE__SRC__nt(t);
 		marker.setCREATE__CORR__nt2nd(t2d);
 		marker.setCREATE__TRG__nd(d);
-		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 
 		createMethodsAndEntries(t, d, postfix);
 		createFieldsAndEntries(t, d, postfix);
@@ -216,14 +236,13 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		// CORR
 		Method2Entry m2e = createCorr(cFactory.createMethod2Entry(), m, e);
 		// MARKER
-		Method2Entry__Marker marker = cFactory.createMethod2Entry__Marker();
+		Method2Entry__Marker marker = createMarker(cFactory.createMethod2Entry__Marker());
 		marker.setCONTEXT__SRC__t(t);
 		marker.setCONTEXT__CORR__t2d((Type2Doc) src2corr.get(t));
 		marker.setCONTEXT__TRG__d(d);
 		marker.setCREATE__SRC__m(m);
 		marker.setCREATE__CORR__m2e(m2e);
 		marker.setCREATE__TRG__e(e);
-		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 
 		createParameters(m, e, postfix);
 	}
@@ -243,14 +262,13 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		// CORR
 		Field2Entry f2e = createCorr(cFactory.createField2Entry(), f, e);
 		// MARKER
-		Field2Entry__Marker marker = cFactory.createField2Entry__Marker();
+		Field2Entry__Marker marker = createMarker(cFactory.createField2Entry__Marker());
 		marker.setCONTEXT__SRC__t(t);
 		marker.setCONTEXT__CORR__t2d((Type2Doc) src2corr.get(t));
 		marker.setCONTEXT__TRG__d(d);
 		marker.setCREATE__SRC__f(f);
 		marker.setCREATE__CORR__f2e(f2e);
 		marker.setCREATE__TRG__e(e);
-		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 	}
 
 	private void createParameters(Method m, Entry e, String oldPostfix) {
@@ -266,13 +284,12 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		// CORR
 		Param2Entry p2e = createCorr(cFactory.createParam2Entry(), p, e);
 		// MARKER
-		Param2Entry__Marker marker = cFactory.createParam2Entry__Marker();
+		Param2Entry__Marker marker = createMarker(cFactory.createParam2Entry__Marker());
 		marker.setCONTEXT__SRC__m(m);
 		marker.setCONTEXT__CORR__m2e((Method2Entry) src2corr.get(m));
 		marker.setCONTEXT__TRG__e(e);
 		marker.setCREATE__SRC__p(p);
 		marker.setCREATE__CORR__p2e(p2e);
-		((InternalEList<EObject>) protocol.getContents()).addUnique(marker);
 	}
 
 	//// DELTA ////
