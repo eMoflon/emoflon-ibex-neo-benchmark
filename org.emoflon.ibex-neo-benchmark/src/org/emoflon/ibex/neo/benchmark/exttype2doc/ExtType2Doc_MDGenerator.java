@@ -1,5 +1,6 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,7 +78,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		name2param = new HashMap<>();
 		name2javadoc = new HashMap<>();
 
-		src2corr = new HashMap<>();
+		src2corr = Collections.synchronizedMap(new HashMap<>());
 
 		tContainer = null;
 		name2folder = new HashMap<>();
