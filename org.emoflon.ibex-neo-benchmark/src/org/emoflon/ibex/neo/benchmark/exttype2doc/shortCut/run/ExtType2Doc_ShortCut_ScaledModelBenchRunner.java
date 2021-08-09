@@ -17,18 +17,18 @@ public abstract class ExtType2Doc_ShortCut_ScaledModelBenchRunner {
 
 		ScaledBenchRunner<ExtType2Doc_ShortCut_Bench, ExtType2Doc_ShortCut_Params> runner = new ScaledBenchRunner<>( //
 				ExtType2Doc_ShortCut_Bench.class, ExtType2Doc_ShortCut_Params.class, //
-				Arrays.asList("-Xmx110G"), execArgs, 5);
+				Arrays.asList("-Xmx110G"), execArgs, 2);
 		runner.run();
 	}
 
 	private static List<String[]> scaledModel_differentDeltas(ShortCutDelta delta) {
 		int[] modelSize = { //
-				100, 200, 300, 400, 500, 750, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000 //
+				100 , 200, 300, 400, 500 //, 750, 1000, 1500, 2000, 2500, 3000 //, 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000 //
 				//10, 25 , 50
 		};
 		
 		int[] num_of_changes = { //
-				50//
+				50 //, 20, 30, 40, 50//
 		}; // 
 		
 		

@@ -44,8 +44,6 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	protected Map<String, Parameter> name2param;
 	protected Map<String, JavaDoc> name2javadoc;
 
-	protected Map<EObject, EObject> src2corr;
-
 	//// TRG ////
 	protected DocContainer tContainer;
 	protected Map<String, Folder> name2folder;
@@ -78,8 +76,6 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		name2param = new HashMap<>();
 		name2javadoc = new HashMap<>();
 
-		src2corr = Collections.synchronizedMap(new HashMap<>());
-
 		tContainer = null;
 		name2folder = new HashMap<>();
 		name2doc = new HashMap<>();
@@ -93,7 +89,6 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	@Override
 	protected <Corr extends EObject> Corr createCorr(Corr corr, EObject src, EObject trg) {
 		super.createCorr(corr, src, trg);
-		src2corr.put(src, corr);
 		return corr;
 	}
 
