@@ -40,11 +40,6 @@ import delta.Delta;
 
 public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<ExtType2Doc_ShortCutFactory, ExtType2Doc_ShortCut_Params> {
 
-	private Collection<Package> rootPackages = Collections.synchronizedList(new LinkedList<>());
-	private Collection<Folder> rootFolders = Collections.synchronizedList(new LinkedList<>());
-	private Collection<EObject> allCorrs = Collections.synchronizedList(new LinkedList<>());
-	private Collection<EObject> allMarkers = Collections.synchronizedList(new LinkedList<>());
-	
 	private Project2DocContainer pr2dc;
 	
 	public ExtType2Doc_ShortCut_MDGenerator(Resource source, Resource target, Resource corr, Resource protocol, Resource delta) {

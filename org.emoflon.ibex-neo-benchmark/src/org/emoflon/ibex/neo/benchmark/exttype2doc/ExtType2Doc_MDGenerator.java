@@ -1,7 +1,9 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EFactory;
@@ -35,6 +37,11 @@ import delta.Delta;
 public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends BenchParameters>
 		extends ModelAndDeltaGenerator<CF, ExtTypeModelFactory, ExtTypeModelPackage, ExtDocModelFactory, ExtDocModelPackage, BP> {
 
+	protected Collection<Package> rootPackages = Collections.synchronizedList(new LinkedList<>());
+	protected Collection<Folder> rootFolders = Collections.synchronizedList(new LinkedList<>());
+	protected Collection<EObject> allCorrs = Collections.synchronizedList(new LinkedList<>());
+	protected Collection<EObject> allMarkers = Collections.synchronizedList(new LinkedList<>());
+	
 	//// SRC ////
 	protected Project sContainer;
 	protected Map<String, Package> name2package;
