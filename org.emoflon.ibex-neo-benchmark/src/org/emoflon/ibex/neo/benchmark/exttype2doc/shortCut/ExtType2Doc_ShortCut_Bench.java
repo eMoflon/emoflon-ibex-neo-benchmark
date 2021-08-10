@@ -51,8 +51,8 @@ public class ExtType2Doc_ShortCut_Bench extends SynchronizationBench<ExtType2Doc
 		ExtType2Doc_ShortCut_Params params = new ExtType2Doc_ShortCut_Params(args);
 		ExtType2Doc_ShortCut_Bench bench = new ExtType2Doc_ShortCut_Bench("org.emoflon.ibex-neo-benchmark", params);
 		System.out.println(bench.genAndBench(false));
-		System.out.println(logger);
-		TimeRegistry.logTimes();
+//		System.out.println(logger);
+//		TimeRegistry.logTimes();
 	}
 
 }

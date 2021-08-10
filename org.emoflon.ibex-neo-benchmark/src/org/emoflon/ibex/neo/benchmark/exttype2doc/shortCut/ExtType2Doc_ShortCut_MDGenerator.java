@@ -1,16 +1,14 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.shortCut;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.stream.IntStream;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.InternalEList;
+import org.emoflon.ibex.neo.benchmark.exttype2doc.BenchCache;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.ExtType2Doc_MDGenerator;
 import org.moflon.smartemf.persistence.SmartEMFResource;
 
@@ -62,10 +60,10 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 	@Override
 	protected void genModels() {
-		long tic = System.currentTimeMillis();
+//		long tic = System.currentTimeMillis();
 		createContainers();
 		createPackageAndFolderHierarchies();
-		System.out.println("Generation took " + ((double) (System.currentTimeMillis() - tic)) / 1000  + "s");
+//		System.out.println("Generation took " + ((double) (System.currentTimeMillis() - tic)) / 1000  + "s");
 	}
 
 	private void createContainers() {
@@ -105,11 +103,11 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		BenchCache cache = new BenchCache();
 
 		// SRC
-		Package p = createRootPackage(postfix);
+		Package p = createRootPackage(postfix, cache);
 		rootPackages.add(p);
 		
 		// TRG
-		Folder f = createRootFolder(postfix);
+		Folder f = createRootFolder(postfix, cache);
 		rootFolders.add(f);
 		
 		// CORR
@@ -132,6 +130,12 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		
 		allCorrs.addAll(cache.corrs);
 		allMarkers.addAll(cache.markers);
+		addNumOfElts(cache.numOfElements);
+//		
+	}
+	
+	private synchronized void addNumOfElts(int numOfElts) {
+		this.numOfElements += numOfElts;
 	}
 
 	private void createPackageAndFolderHierarchies(Package rootP, Folder rootF, int currentDepth, String oldPostfix, BenchCache cache) {
@@ -146,7 +150,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Package p = createPackage(postfix, superP);
+		Package p = createPackage(postfix, superP, cache);
 		// CORR
 		Package2Folder p2f = createCorr(cFactory.createPackage2Folder(), p, f);
 		cache.corrs.add(p2f);
@@ -177,9 +181,9 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Type t = createType(postfix, false, p);
+		Type t = createType(postfix, false, p, cache);
 		// TRG
-		Doc d = createDoc(postfix, f);
+		Doc d = createDoc(postfix, f, cache);
 		// CORR
 		Type2Doc t2d = createCorr(cFactory.createType2Doc(), t, d);
 		cache.corrs.add(t2d);
@@ -212,10 +216,10 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Type t = createType(postfix, false, p);
+		Type t = createType(postfix, false, p, cache);
 		createTypeInheritance(superT, t);
 		// TRG
-		Doc d = createDoc(postfix, f);
+		Doc d = createDoc(postfix, f, cache);
 		createDocLink(superD, d);
 		// CORR
 		Type2Doc t2d = createCorr(cFactory.createType2Doc(), t, d);
@@ -260,9 +264,9 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Method m = createMethod(postfix, t);
+		Method m = createMethod(postfix, t, cache);
 		// TRG
-		Entry e = createEntry(postfix, EntryType.METHOD, d);
+		Entry e = createEntry(postfix, EntryType.METHOD, d, cache);
 		// CORR
 		Method2Entry m2e = createCorr(cFactory.createMethod2Entry(), m, e);
 		cache.corrs.add(m2e);
@@ -290,9 +294,9 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Field f = createField(postfix, t);
+		Field f = createField(postfix, t, cache);
 		// TRG
-		Entry e = createEntry(postfix, EntryType.FIELD, d);
+		Entry e = createEntry(postfix, EntryType.FIELD, d, cache);
 		// CORR
 		Field2Entry f2e = createCorr(cFactory.createField2Entry(), f, e);
 		cache.corrs.add(f2e);
@@ -318,7 +322,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Parameter p = createParameter(postfix, m);
+		Parameter p = createParameter(postfix, m, cache);
 		// CORR
 		Param2Entry p2e = createCorr(cFactory.createParam2Entry(), p, e);
 		cache.corrs.add(p2e);
@@ -447,11 +451,5 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		createObject(newRootType, delta);
 		createLink(firstPackageWithTypes, newRootType, sPackage.getPackage_Types(), delta);
 		createLink(newRootType, rootType, sPackage.getType_ExtendedBy(), delta);
-	}
-
-	class BenchCache {
-		protected Collection<EObject> corrs = new LinkedList<>();
-		protected Collection<EObject> markers = new LinkedList<>();
-		protected Map<EObject, EObject> src2corr = new HashMap<EObject, EObject>();
 	}
 }
