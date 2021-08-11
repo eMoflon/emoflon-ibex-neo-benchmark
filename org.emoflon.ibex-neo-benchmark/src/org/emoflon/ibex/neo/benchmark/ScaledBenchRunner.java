@@ -68,6 +68,14 @@ public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParam
 				}
 				
 				if(process.exitValue() != 0) {
+					StringBuilder b = new StringBuilder();
+					String read = reader.readLine();
+					while (read != null) {
+						b.append(read);
+						b.append("\n");
+						read = reader.readLine();
+					}
+					System.err.println(b);
 					// count exceptions and restart repetition if one is detected
 					exceptionCounter++;
 					r--;

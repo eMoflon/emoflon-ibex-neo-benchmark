@@ -17,7 +17,7 @@ public abstract class ExtType2Doc_ShortCut_ScaledModelBenchRunner {
 
 		ScaledBenchRunner<ExtType2Doc_ShortCut_Bench, ExtType2Doc_ShortCut_Params> runner = new ScaledBenchRunner<>( //
 				ExtType2Doc_ShortCut_Bench.class, ExtType2Doc_ShortCut_Params.class, //
-				Arrays.asList("-Xmx110G"), execArgs, 5);
+				Arrays.asList("-Xmx42G"), execArgs, 5);
 		runner.run();
 	}
 

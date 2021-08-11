@@ -1,8 +1,5 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.shortCut;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.stream.IntStream;
 
 import org.eclipse.emf.ecore.EObject;
@@ -369,7 +366,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 		Package newRoot = sFactory.createPackage();
 		newRoot.setName("NewRoot" + p.getName());
-		name2package.put(newRoot.getName(), newRoot);
+//		name2package.put(newRoot.getName(), newRoot);
 
 		createObject(newRoot, delta);
 		createLink(sContainer, newRoot, sPackage.getProject_RootPackages(), delta);
@@ -441,7 +438,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 		Type newRootType = sFactory.createType();
 		newRootType.setName("NewRoot" + rootType.getName());
-		name2type.put(newRootType.getName(), newRootType);
+//		name2type.put(newRootType.getName(), newRootType);
 
 		createObject(newRootType, delta);
 		createLink(firstPackageWithTypes, newRootType, sPackage.getPackage_Types(), delta);
