@@ -64,6 +64,7 @@ public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParam
 					// count timeouts and restart repetition
 					timeoutCounter++;
 					r--;
+					terminateProcess(process);
 					continue;
 				}
 				
@@ -79,6 +80,7 @@ public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParam
 					// count exceptions and restart repetition if one is detected
 					exceptionCounter++;
 					r--;
+					terminateProcess(process);
 					continue;
 				}
 				
@@ -108,6 +110,17 @@ public class ScaledBenchRunner<B extends IbexBench<?, BP>, BP extends BenchParam
 		}
 
 		benchCont.print();
+	}
+
+	private void terminateProcess(Process process) throws InterruptedException {
+		process.destroy();
+		int counter=0;
+		while(process.isAlive()) {
+			Thread.sleep(10);
+			counter++;
+			if(counter>=100)
+				process.destroyForcibly();
+		}
 	}
 
 	protected Process execute(Class<?> clazz, List<String> jvmArgs, List<String> args) throws IOException, InterruptedException {
