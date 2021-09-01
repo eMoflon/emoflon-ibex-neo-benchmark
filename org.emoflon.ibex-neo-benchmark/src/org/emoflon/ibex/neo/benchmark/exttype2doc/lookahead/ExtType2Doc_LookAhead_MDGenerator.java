@@ -28,8 +28,7 @@ public abstract class ExtType2Doc_LookAhead_MDGenerator extends ExtType2Doc_MDGe
 		super.clearAll();
 	}
 
-	@Override
-	protected Package createRootPackage(String postfix) {
+	protected Package createContainerPackage(String postfix) {
 		sContainer = sFactory.createPackage();
 		sContainer.setName("Package" + postfix);
 		source.getContents().add(sContainer);
@@ -37,8 +36,7 @@ public abstract class ExtType2Doc_LookAhead_MDGenerator extends ExtType2Doc_MDGe
 		return sContainer;
 	}
 
-	@Override
-	protected Folder createRootFolder(String postfix) {
+	protected Folder createContainerFolder(String postfix) {
 		tContainer = tFactory.createFolder();
 		tContainer.setName("Package" + postfix);
 		target.getContents().add(tContainer);

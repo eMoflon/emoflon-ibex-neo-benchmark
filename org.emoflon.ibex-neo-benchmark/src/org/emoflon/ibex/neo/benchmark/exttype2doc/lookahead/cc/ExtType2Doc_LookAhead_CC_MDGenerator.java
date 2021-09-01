@@ -1,6 +1,12 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.cc;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.stream.IntStream;
+
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.ExtType2Doc_LookAhead_MDGenerator;
 
 import ExtDocModel.Doc;
@@ -9,6 +15,9 @@ import ExtTypeModel.Package;
 import ExtTypeModel.Type;
 
 public class ExtType2Doc_LookAhead_CC_MDGenerator extends ExtType2Doc_LookAhead_MDGenerator {
+	
+	private Collection<Package> rootPackages = Collections.synchronizedList(new LinkedList<>());
+	private Collection<Folder> rootFolders = Collections.synchronizedList(new LinkedList<>());
 
 	public ExtType2Doc_LookAhead_CC_MDGenerator(Resource source, Resource target, Resource corr, Resource protocol, Resource delta) {
 		super(source, target, corr, protocol, delta);
@@ -26,23 +35,26 @@ public class ExtType2Doc_LookAhead_CC_MDGenerator extends ExtType2Doc_LookAhead_
 		String postfix = SEP + "ROOT";
 		
 		// SRC
-		createRootPackage(postfix);
+		createContainerPackage(postfix);
 		// TRG
-		createRootFolder(postfix);
+		createContainerFolder(postfix);
 	}
 
 	private void createPackagesAndFolders() {
-		for (int i = 0; i < parameters.modelScale; i++)
-			createRootPackageAndFolder(i);
+		IntStream.range(0, parameters.modelScale).parallel().forEach(this::createRootPackageAndFolder);
+		((InternalEList<Package>) sContainer.getSubPackages()).addAllUnique(rootPackages);
+		((InternalEList<Folder>) tContainer.getSubFolder()).addAllUnique(rootFolders);
 	}
 
 	private void createRootPackageAndFolder(int index) {
 		String postfix = SEP + index;
 
 		// SRC
-		Package p = createPackage(postfix, sContainer);
+		Package p = createRootPackage(postfix);
+		rootPackages.add(p);
 		// TRG
-		Folder f = createFolder(postfix, tContainer);
+		Folder f = createRootFolder(postfix);
+		rootFolders.add(f);
 
 		createPackageAndFolderHierarchies(p, f, 0, postfix);
 	}

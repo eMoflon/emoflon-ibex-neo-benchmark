@@ -10,10 +10,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.neo.benchmark.util.BenchParameters;
 
-import ExtTypeModel.Package;
 import delta.AttributeDelta;
 import delta.Delta;
 import delta.DeltaContainer;

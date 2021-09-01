@@ -1,12 +1,20 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.sync;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.stream.IntStream;
+
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead.ExtType2Doc_LookAhead_MDGenerator;
 
 import ExtTypeModel.Package;
 import ExtTypeModel.Type;
 
 public class ExtType2Doc_LookAhead_Sync_MDGenerator extends ExtType2Doc_LookAhead_MDGenerator {
+	
+	private Collection<Package> rootPackages = Collections.synchronizedList(new LinkedList<>());
 
 	public ExtType2Doc_LookAhead_Sync_MDGenerator(Resource source, Resource target, Resource corr, Resource protocol, Resource delta) {
 		super(source, target, corr, protocol, delta);
@@ -24,19 +32,20 @@ public class ExtType2Doc_LookAhead_Sync_MDGenerator extends ExtType2Doc_LookAhea
 		String postfix = SEP + "ROOT";
 
 		// SRC
-		createRootPackage(postfix);
+		createContainerPackage(postfix);
 	}
 
 	private void createPackages() {
-		for (int i = 0; i < parameters.modelScale; i++)
-			createRootPackage(i);
+		IntStream.range(0, parameters.modelScale).parallel().forEach(this::createRootPackage);
+		((InternalEList<Package>) sContainer.getSubPackages()).addAllUnique(rootPackages);
 	}
 
 	private void createRootPackage(int index) {
 		String postfix = SEP + index;
 
 		// SRC
-		Package p = createPackage(postfix, sContainer);
+		Package p = createRootPackage(postfix);
+		rootPackages.add(p);
 
 		createPackageHierarchies(p, 0, postfix);
 	}
