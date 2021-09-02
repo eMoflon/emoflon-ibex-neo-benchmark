@@ -15,6 +15,7 @@ import org.emoflon.ibex.neo.benchmark.util.BenchEntry;
 import org.emoflon.ibex.neo.benchmark.util.BenchParameters;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
+import org.moflon.smartemf.persistence.SmartEMFResourceFactoryImpl;
 
 import delta.impl.DeltaPackageImpl;
 
@@ -146,7 +147,7 @@ public abstract class IbexBench<OpStrat extends OperationalStrategy, BenchParams
 	private void initResourceSet() {
 		rs = new ResourceSetImpl();
 		rs.getResourceFactoryRegistry().getExtensionToFactoryMap() //
-				.put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
+				.put(Resource.Factory.Registry.DEFAULT_EXTENSION, new SmartEMFResourceFactoryImpl(workspacePath));
 		try {
 			rs.getURIConverter().getURIMap().put(URI.createPlatformResourceURI("/", true),
 					URI.createFileURI(new File(workspacePath).getCanonicalPath() + File.separator));
