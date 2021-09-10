@@ -1,13 +1,6 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
 import org.eclipse.emf.ecore.EFactory;
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.neo.benchmark.ModelAndDeltaGenerator;
@@ -37,11 +30,6 @@ import delta.Delta;
 public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends BenchParameters>
 		extends ModelAndDeltaGenerator<CF, ExtTypeModelFactory, ExtTypeModelPackage, ExtDocModelFactory, ExtDocModelPackage, BP> {
 
-	protected Collection<Package> rootPackages = Collections.synchronizedList(new LinkedList<>());
-	protected Collection<Folder> rootFolders = Collections.synchronizedList(new LinkedList<>());
-	protected Collection<EObject> allCorrs = Collections.synchronizedList(new LinkedList<>());
-	protected Collection<EObject> allMarkers = Collections.synchronizedList(new LinkedList<>());
-	
 	protected Project sContainer;
 	protected DocContainer tContainer;
 
@@ -68,28 +56,22 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 
 	//// MODEL ////
 
-	@Override
-	protected <Corr extends EObject> Corr createCorr(Corr corr, EObject src, EObject trg) {
-		super.createCorr(corr, src, trg);
-		return corr;
-	}
-
 	protected void createProject() {
 		sContainer = sFactory.createProject();
 		source.getContents().add(sContainer);
-		numOfElements++;
+		addNumOfElements(1);
 	}
 
 	protected void createDocContainer() {
 		tContainer = tFactory.createDocContainer();
 		target.getContents().add(tContainer);
-		numOfElements++;
+		addNumOfElements(1);
 	}
 
-	protected Glossary createGlossary(BenchCache cache) {
+	protected Glossary createGlossary() {
 		Glossary g = tFactory.createGlossary();
 		tContainer.setGlossary(g);
-		cache.numOfElements++;
+		addNumOfElements(1);
 		return g;
 	}
 

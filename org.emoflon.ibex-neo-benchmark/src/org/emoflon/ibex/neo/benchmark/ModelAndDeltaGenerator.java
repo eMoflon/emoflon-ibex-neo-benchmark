@@ -3,6 +3,7 @@ package org.emoflon.ibex.neo.benchmark;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EFactory;
@@ -10,6 +11,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.emoflon.ibex.neo.benchmark.exttype2doc.BenchCache;
 import org.emoflon.ibex.neo.benchmark.util.BenchParameters;
 
 import delta.AttributeDelta;
@@ -44,12 +46,15 @@ public abstract class ModelAndDeltaGenerator<CorrFactory extends EFactory, //
 
 	protected BenchParams parameters;
 
-	protected int numOfElements;
+	private AtomicInteger numOfElements;
 
 	protected DeltaContainer dContainer;
 
+	protected Collection<EObject> allCorrs = Collections.synchronizedList(new LinkedList<>());
+	protected Collection<EObject> allMarkers = Collections.synchronizedList(new LinkedList<>());
+
 	public ModelAndDeltaGenerator(Resource source, Resource target, Resource corr, Resource protocol, Resource delta) {
-		this.numOfElements = 0;
+		this.numOfElements = new AtomicInteger(0);
 
 		this.source = source;
 		this.target = target;
@@ -80,13 +85,30 @@ public abstract class ModelAndDeltaGenerator<CorrFactory extends EFactory, //
 	}
 
 	public int getNumOfElements() {
-		return numOfElements;
+		return numOfElements.get();
+	}
+	
+	protected void addNumOfElements(int numOfElts) {
+		this.numOfElements.addAndGet(numOfElts);
 	}
 
 	protected <Corr extends EObject> Corr createCorr(Corr corr, EObject src, EObject trg) {
 		corr.eSet(corr.eClass().getEStructuralFeature("source"), src);
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
 		return corr;
+	}
+	
+	protected <Corr extends EObject> Corr createCorr(Corr corr, EObject src, EObject trg, BenchCache cache) {
+		createCorr(corr, src, trg);
+		cache.corrs.add(corr);
+		cache.src2corr.put(src, corr);
+		return corr;
+	}
+	
+	protected void addCacheContent(BenchCache cache) {
+		allCorrs.addAll(cache.corrs);
+		allMarkers.addAll(cache.markers);
+		addNumOfElements(cache.numOfElements);
 	}
 	
 	//// DELTA ////

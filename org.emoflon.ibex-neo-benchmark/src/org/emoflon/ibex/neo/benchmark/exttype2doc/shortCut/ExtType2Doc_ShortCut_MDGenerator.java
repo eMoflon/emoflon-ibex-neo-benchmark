@@ -1,5 +1,8 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.shortCut;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.stream.IntStream;
 
 import org.eclipse.emf.ecore.EObject;
@@ -38,6 +41,8 @@ import delta.Delta;
 public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<ExtType2Doc_ShortCutFactory, ExtType2Doc_ShortCut_Params> {
 
 	private Project2DocContainer pr2dc;
+	private Collection<Package> rootPackages = Collections.synchronizedList(new LinkedList<>());
+	private Collection<Folder> rootFolders = Collections.synchronizedList(new LinkedList<>());
 	
 	public ExtType2Doc_ShortCut_MDGenerator(Resource source, Resource target, Resource corr, Resource protocol, Resource delta) {
 		super(source, target, corr, protocol, delta);
@@ -79,20 +84,20 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		IntStream.range(0, parameters.num_of_root_packages).parallel().forEach(this::createRootPackageAndFolder);
 		((InternalEList<Package>) sContainer.getRootPackages()).addAllUnique(rootPackages);
 		((InternalEList<Folder>) tContainer.getFolders()).addAllUnique(rootFolders);
-		if(corr instanceof SmartEMFResource) {
+		
+		if (corr instanceof SmartEMFResource) {
 			corr.getContents().addAll(allCorrs);
 			protocol.getContents().addAll(allMarkers);
-		}
-		else {
+		} else {
 			((InternalEList<EObject>) corr.getContents()).addAllUnique(allCorrs);
 			((InternalEList<EObject>) protocol.getContents()).addAllUnique(allMarkers);
 		}
 	}
 
 	private void createRootPackageAndFolder(int index) {
-		String postfix = SEP + index;
-		
 		BenchCache cache = new BenchCache();
+		
+		String postfix = SEP + index;
 
 		// SRC
 		Package p = createRootPackage(postfix, cache);
@@ -120,14 +125,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		if (parameters.horizontal_package_scales.length != 0)
 			createPackageAndFolderHierarchies(p, f, 0, postfix, cache);
 		
-		allCorrs.addAll(cache.corrs);
-		allMarkers.addAll(cache.markers);
-		addNumOfElts(cache.numOfElements);
-//		
-	}
-	
-	private synchronized void addNumOfElts(int numOfElts) {
-		this.numOfElements += numOfElts;
+		addCacheContent(cache);
 	}
 
 	private void createPackageAndFolderHierarchies(Package rootP, Folder rootF, int currentDepth, String oldPostfix, BenchCache cache) {
