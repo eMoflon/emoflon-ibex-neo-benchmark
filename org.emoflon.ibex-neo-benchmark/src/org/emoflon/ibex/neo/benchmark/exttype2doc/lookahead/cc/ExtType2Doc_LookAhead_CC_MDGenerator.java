@@ -27,70 +27,70 @@ public class ExtType2Doc_LookAhead_CC_MDGenerator extends ExtType2Doc_LookAhead_
 
 	@Override
 	protected void genModels() {
-		createContainers();
-		createPackagesAndFolders();
+//		createContainers();
+//		createPackagesAndFolders();
 	}
 
-	private void createContainers() {
-		String postfix = SEP + "ROOT";
-		
-		// SRC
-		createContainerPackage(postfix);
-		// TRG
-		createContainerFolder(postfix);
-	}
-
-	private void createPackagesAndFolders() {
-		IntStream.range(0, parameters.modelScale).parallel().forEach(this::createRootPackageAndFolder);
-		((InternalEList<Package>) sContainer.getSubPackages()).addAllUnique(rootPackages);
-		((InternalEList<Folder>) tContainer.getSubFolder()).addAllUnique(rootFolders);
-	}
-
-	private void createRootPackageAndFolder(int index) {
-		String postfix = SEP + index;
-
-		// SRC
-		Package p = createRootPackage(postfix);
-		rootPackages.add(p);
-		// TRG
-		Folder f = createRootFolder(postfix);
-		rootFolders.add(f);
-
-		createPackageAndFolderHierarchies(p, f, 0, postfix);
-	}
-
-	private void createPackageAndFolderHierarchies(Package rootP, Folder rootF, int currentDepth, String oldPostfix) {
-		if (currentDepth >= parameters.package_hierarchy_depth)
-			return;
-
-		for (int i = 0; i < parameters.horizontal_package_scale; i++)
-			createPackageAndFolderHierarchy(rootP, rootF, currentDepth, oldPostfix, i);
-	}
-
-	private void createPackageAndFolderHierarchy(Package superP, Folder superF, int currentDepth, String oldPostfix, int index) {
-		String postfix = oldPostfix + SEP + index;
-
-		// SRC
-		Package p = createPackage(postfix, superP);
-		// TRG
-		Folder f = createFolder(postfix, superF);
-
-		createTypesAndDocs(p, f, postfix);
-		createPackageAndFolderHierarchies(p, f, currentDepth + 1, postfix);
-	}
-
-	private void createTypesAndDocs(Package p, Folder f, String oldPostfix) {
-		String postfixSuper = oldPostfix + SEP + 0;
-		String postfixSub = oldPostfix + SEP + 1;
-
-		// SRC
-		Type superT = createType(postfixSuper, false, p);
-		Type subT = createType(postfixSub, false, p);
-		createTypeInheritance(superT, subT);
-		// TRG
-		Doc superD = createDoc(postfixSuper, f);
-		Doc subD = createDoc(postfixSub, f);
-		createDocLink(superD, subD);
-	}
+//	private void createContainers() {
+//		String postfix = SEP + "ROOT";
+//		
+//		// SRC
+//		createContainerPackage(postfix);
+//		// TRG
+//		createContainerFolder(postfix);
+//	}
+//
+//	private void createPackagesAndFolders() {
+//		IntStream.range(0, parameters.modelScale).parallel().forEach(this::createRootPackageAndFolder);
+//		((InternalEList<Package>) sContainer.getSubPackages()).addAllUnique(rootPackages);
+//		((InternalEList<Folder>) tContainer.getSubFolder()).addAllUnique(rootFolders);
+//	}
+//
+//	private void createRootPackageAndFolder(int index) {
+//		String postfix = SEP + index;
+//
+//		// SRC
+//		Package p = createRootPackage(postfix);
+//		rootPackages.add(p);
+//		// TRG
+//		Folder f = createRootFolder(postfix);
+//		rootFolders.add(f);
+//
+//		createPackageAndFolderHierarchies(p, f, 0, postfix);
+//	}
+//
+//	private void createPackageAndFolderHierarchies(Package rootP, Folder rootF, int currentDepth, String oldPostfix) {
+//		if (currentDepth >= parameters.package_hierarchy_depth)
+//			return;
+//
+//		for (int i = 0; i < parameters.horizontal_package_scale; i++)
+//			createPackageAndFolderHierarchy(rootP, rootF, currentDepth, oldPostfix, i);
+//	}
+//
+//	private void createPackageAndFolderHierarchy(Package superP, Folder superF, int currentDepth, String oldPostfix, int index) {
+//		String postfix = oldPostfix + SEP + index;
+//
+//		// SRC
+//		Package p = createPackage(postfix, superP);
+//		// TRG
+//		Folder f = createFolder(postfix, superF);
+//
+//		createTypesAndDocs(p, f, postfix);
+//		createPackageAndFolderHierarchies(p, f, currentDepth + 1, postfix);
+//	}
+//
+//	private void createTypesAndDocs(Package p, Folder f, String oldPostfix) {
+//		String postfixSuper = oldPostfix + SEP + 0;
+//		String postfixSub = oldPostfix + SEP + 1;
+//
+//		// SRC
+//		Type superT = createType(postfixSuper, false, p);
+//		Type subT = createType(postfixSub, false, p);
+//		createTypeInheritance(superT, subT);
+//		// TRG
+//		Doc superD = createDoc(postfixSuper, f);
+//		Doc subD = createDoc(postfixSub, f);
+//		createDocLink(superD, subD);
+//	}
 
 }

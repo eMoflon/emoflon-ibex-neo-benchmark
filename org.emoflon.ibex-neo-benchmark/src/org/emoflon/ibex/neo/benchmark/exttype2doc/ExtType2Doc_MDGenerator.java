@@ -1,7 +1,9 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EFactory;
@@ -35,24 +37,13 @@ import delta.Delta;
 public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends BenchParameters>
 		extends ModelAndDeltaGenerator<CF, ExtTypeModelFactory, ExtTypeModelPackage, ExtDocModelFactory, ExtDocModelPackage, BP> {
 
-	//// SRC ////
+	protected Collection<Package> rootPackages = Collections.synchronizedList(new LinkedList<>());
+	protected Collection<Folder> rootFolders = Collections.synchronizedList(new LinkedList<>());
+	protected Collection<EObject> allCorrs = Collections.synchronizedList(new LinkedList<>());
+	protected Collection<EObject> allMarkers = Collections.synchronizedList(new LinkedList<>());
+	
 	protected Project sContainer;
-	protected Map<String, Package> name2package;
-	protected Map<String, Type> name2type;
-	protected Map<String, Method> name2method;
-	protected Map<String, Field> name2field;
-	protected Map<String, Parameter> name2param;
-	protected Map<String, JavaDoc> name2javadoc;
-
-	protected Map<EObject, EObject> src2corr;
-
-	//// TRG ////
 	protected DocContainer tContainer;
-	protected Map<String, Folder> name2folder;
-	protected Map<String, Doc> name2doc;
-	protected Map<String, Entry> name2entry;
-	protected Map<String, Annotation> name2annotation;
-	protected Map<String, GlossaryEntry> name2glossaryEntry;
 
 	public ExtType2Doc_MDGenerator(Resource source, Resource target, Resource corr, Resource protocol, Resource delta) {
 		super(source, target, corr, protocol, delta);
@@ -71,21 +62,8 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	@Override
 	protected void clearAll() {
 		sContainer = null;
-		name2package = new HashMap<>();
-		name2type = new HashMap<>();
-		name2method = new HashMap<>();
-		name2field = new HashMap<>();
-		name2param = new HashMap<>();
-		name2javadoc = new HashMap<>();
-
-		src2corr = Collections.synchronizedMap(new HashMap<>());
 
 		tContainer = null;
-		name2folder = new HashMap<>();
-		name2doc = new HashMap<>();
-		name2entry = new HashMap<>();
-		name2annotation = new HashMap<>();
-		name2glossaryEntry = new HashMap<>();
 	}
 
 	//// MODEL ////
@@ -93,7 +71,6 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 	@Override
 	protected <Corr extends EObject> Corr createCorr(Corr corr, EObject src, EObject trg) {
 		super.createCorr(corr, src, trg);
-		src2corr.put(src, corr);
 		return corr;
 	}
 
@@ -109,64 +86,64 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		numOfElements++;
 	}
 
-	protected Glossary createGlossary() {
+	protected Glossary createGlossary(BenchCache cache) {
 		Glossary g = tFactory.createGlossary();
 		tContainer.setGlossary(g);
-		numOfElements++;
+		cache.numOfElements++;
 		return g;
 	}
 
-	protected Package createRootPackage(String postfix) {
+	protected Package createRootPackage(String postfix, BenchCache cache) {
 		Package p = sFactory.createPackage();
 		p.setName("Package" + postfix);
-		name2package.put(p.getName(), p);
-		numOfElements++;
+		cache.name2package.put(p.getName(), p);
+		cache.numOfElements++;
 		return p;
 	}
 
-	protected Package createPackage(String postfix, Package superPackage) {
+	protected Package createPackage(String postfix, Package superPackage, BenchCache cache) {
 		Package p = sFactory.createPackage();
 		p.setName("Package" + postfix);
 		((InternalEList<Package>) superPackage.getSubPackages()).addUnique(p);
-		name2package.put(p.getName(), p);
-		numOfElements++;
+		cache.name2package.put(p.getName(), p);
+		cache.numOfElements++;
 		return p;
 	}
 
-	protected Folder createRootFolder(String postfix) {
+	protected Folder createRootFolder(String postfix, BenchCache cache) {
 		Folder f = tFactory.createFolder();
 		f.setName("Package" + postfix);
-		name2folder.put(f.getName(), f);
-		numOfElements++;
+		cache.name2folder.put(f.getName(), f);
+		cache.numOfElements++;
 		return f;
 	}
 
-	protected Folder createFolder(String postfix, Folder superFolder) {
+	protected Folder createFolder(String postfix, Folder superFolder, BenchCache cache) {
 		Folder f = tFactory.createFolder();
 		f.setName("Package" + postfix);
 		((InternalEList<Folder>) superFolder.getSubFolder()).addUnique(f);
-		name2folder.put(f.getName(), f);
-		numOfElements++;
+		cache.name2folder.put(f.getName(), f);
+		cache.numOfElements++;
 		return f;
 	}
 
-	protected Type createType(String postfix, boolean isInterface, Package p) {
+	protected Type createType(String postfix, boolean isInterface, Package p, BenchCache cache) {
 		Type t = sFactory.createType();
 		t.setName("Type" + postfix);
 		t.setInterface(isInterface);
 		((InternalEList<Type>) p.getTypes()).addUnique(t);
-		name2type.put(t.getName(), t);
-		numOfElements++;
+		cache.name2type.put(t.getName(), t);
+		cache.numOfElements++;
 		return t;
 	}
 
-	protected Doc createDoc(String postfix, Folder f) {
+	protected Doc createDoc(String postfix, Folder f, BenchCache cache) {
 		Doc d = tFactory.createDoc();
 		d.setName("Type" + postfix);
 		((InternalEList<Doc>) f.getDocs()).addUnique(d);
 
-		name2doc.put(d.getName(), d);
-		numOfElements++;
+		cache.name2doc.put(d.getName(), d);
+		cache.numOfElements++;
 		return d;
 	}
 
@@ -178,69 +155,69 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		((InternalEList<Doc>) superDoc.getSubDocs()).addUnique(subDoc);
 	}
 
-	protected Method createMethod(String postfix, Type t) {
+	protected Method createMethod(String postfix, Type t, BenchCache cache) {
 		Method m = sFactory.createMethod();
 		m.setName("Method" + postfix);
 		((InternalEList<Method>) t.getMethods()).addUnique(m);
-		name2method.put(m.getName(), m);
-		numOfElements++;
+		cache.name2method.put(m.getName(), m);
+		cache.numOfElements++;
 		return m;
 	}
 
-	protected Field createField(String postfix, Type t) {
+	protected Field createField(String postfix, Type t, BenchCache cache) {
 		Field f = sFactory.createField();
 		f.setName("Field" + postfix);
 		((InternalEList<Field>) t.getFields()).addUnique(f);
-		name2field.put(f.getName(), f);
-		numOfElements++;
+		cache.name2field.put(f.getName(), f);
+		cache.numOfElements++;
 		return f;
 	}
 
-	protected Entry createEntry(String postfix, EntryType entryType, Doc d) {
+	protected Entry createEntry(String postfix, EntryType entryType, Doc d, BenchCache cache) {
 		Entry e = tFactory.createEntry();
 		String name = entryType == EntryType.METHOD ? "Method" : "Field";
 		e.setName(name + postfix);
 		e.setType(entryType);
 		((InternalEList<Entry>) d.getEntries()).addUnique(e);
-		name2entry.put(e.getName(), e);
-		numOfElements++;
+		cache.name2entry.put(e.getName(), e);
+		cache.numOfElements++;
 		return e;
 	}
 
-	protected Parameter createParameter(String postfix, Method m) {
+	protected Parameter createParameter(String postfix, Method m, BenchCache cache) {
 		Parameter p = sFactory.createParameter();
 		p.setName("Param" + postfix);
 		((InternalEList<Parameter>) m.getParams()).addUnique(p);
-		name2param.put(p.getName(), p);
-		numOfElements++;
+		cache.name2param.put(p.getName(), p);
+		cache.numOfElements++;
 		return p;
 	}
 
-	protected JavaDoc createJavaDoc(String postfix, Method m) {
+	protected JavaDoc createJavaDoc(String postfix, Method m, BenchCache cache) {
 		JavaDoc jd = sFactory.createJavaDoc();
 		jd.setComment("JavaDoc" + postfix);
 		((InternalEList<JavaDoc>) m.getDocs()).addUnique(jd);
-		name2javadoc.put(jd.getComment(), jd);
-		numOfElements++;
+		cache.name2javadoc.put(jd.getComment(), jd);
+		cache.numOfElements++;
 		return jd;
 	}
 
-	protected Annotation createAnnotation(String postfix, Entry e) {
+	protected Annotation createAnnotation(String postfix, Entry e, BenchCache cache) {
 		Annotation a = tFactory.createAnnotation();
 		a.setValue("JavaDoc" + postfix);
 		((InternalEList<Annotation>) e.getAnnotations()).addUnique(a);
-		name2annotation.put(a.getValue(), a);
-		numOfElements++;
+		cache.name2annotation.put(a.getValue(), a);
+		cache.numOfElements++;
 		return a;
 	}
 
-	protected GlossaryEntry createGlossaryEntry(String postfix) {
+	protected GlossaryEntry createGlossaryEntry(String postfix, BenchCache cache) {
 		GlossaryEntry ge = tFactory.createGlossaryEntry();
 		ge.setName("GlossaryEntry" + postfix);
 		ge.setGlossary(tContainer.getGlossary());
 		((InternalEList<GlossaryEntry>) tContainer.getGlossary().getEntries()).addUnique(ge);
-		name2glossaryEntry.put(ge.getName(), ge);
-		numOfElements++;
+		cache.name2glossaryEntry.put(ge.getName(), ge);
+		cache.numOfElements++;
 		return ge;
 	}
 
