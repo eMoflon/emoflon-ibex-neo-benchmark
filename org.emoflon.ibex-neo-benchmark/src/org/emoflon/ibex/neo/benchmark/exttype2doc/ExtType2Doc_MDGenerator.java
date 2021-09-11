@@ -27,8 +27,8 @@ import ExtTypeModel.Project;
 import ExtTypeModel.Type;
 import delta.Delta;
 
-public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends BenchParameters>
-		extends ModelAndDeltaGenerator<CF, ExtTypeModelFactory, ExtTypeModelPackage, ExtDocModelFactory, ExtDocModelPackage, BP> {
+public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends BenchParameters> extends
+		ModelAndDeltaGenerator<CF, ExtTypeModelFactory, ExtTypeModelPackage, ExtDocModelFactory, ExtDocModelPackage, BP> {
 
 	protected Project sContainer;
 	protected DocContainer tContainer;
@@ -160,7 +160,8 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		String name = entryType == EntryType.METHOD ? "Method" : "Field";
 		e.setName(name + postfix);
 		e.setType(entryType);
-		((InternalEList<Entry>) d.getEntries()).addUnique(e);
+		if (d != null)
+			((InternalEList<Entry>) d.getEntries()).addUnique(e);
 		cache.name2entry.put(e.getName(), e);
 		cache.numOfElements++;
 		return e;

@@ -2,8 +2,10 @@ package org.emoflon.ibex.neo.benchmark.exttype2doc.concsync;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.stream.IntStream;
 
@@ -54,7 +56,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 	private Package rootPackage;
 	private Folder rootFolder;
-	Package2Folder p2f;
+	Package2Folder rp2rf;
 	
 	private List<Type> rootTypes = Collections.synchronizedList(new LinkedList<>());
 
@@ -63,6 +65,8 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 	private Collection<Type> allTypes = Collections.synchronizedList(new LinkedList<>());
 	private Collection<Doc> allDocs = Collections.synchronizedList(new LinkedList<>());
 	private Collection<Entry> allEntries = Collections.synchronizedList(new LinkedList<>());
+	
+	private Map<String, Doc> name2doc = Collections.synchronizedMap(new HashMap<>());
 
 	public ExtType2Doc_ConcSync_MDGenerator(Resource source, Resource target, Resource corr, Resource protocol, Resource delta) {
 		super(source, target, corr, protocol, delta);
@@ -120,8 +124,8 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		// TRG
 		rootFolder = createRootFolder("", cache);
 		// CORR
-		p2f = createCorr(cFactory.createPackage2Folder(), rootPackage, rootFolder);
-		cache.corrs.add(p2f);
+		rp2rf = createCorr(cFactory.createPackage2Folder(), rootPackage, rootFolder);
+		cache.corrs.add(rp2rf);
 		// MARKER
 		Package2Folder__Marker marker = cFactory.createPackage2Folder__Marker();
 		cache.markers.add(marker);
@@ -129,10 +133,12 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCONTEXT__CORR__pr2dc(pr2dc);
 		marker.setCONTEXT__TRG__dc(tContainer);
 		marker.setCREATE__SRC__p(rootPackage);
-		marker.setCREATE__CORR__p2f(p2f);
+		marker.setCREATE__CORR__p2f(rp2rf);
 		marker.setCREATE__TRG__f(rootFolder);
 		
 		addCacheContent(cache);
+		((InternalEList<Package>) sContainer.getRootPackages()).add(rootPackage);
+		((InternalEList<Folder>) tContainer.getFolders()).add(rootFolder);
 	}
 
 	private void createTypeAndDocHierarchies() {
@@ -169,7 +175,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		Type2Doc__Marker marker = cFactory.createType2Doc__Marker();
 		cache.markers.add(marker);
 		marker.setCONTEXT__SRC__p(rootPackage);
-		marker.setCONTEXT__CORR__p2f(p2f);
+		marker.setCONTEXT__CORR__p2f(rp2rf);
 		marker.setCONTEXT__TRG__f(rootFolder);
 		marker.setCREATE__SRC__t(t);
 		marker.setCREATE__CORR__t2d(t2d);
@@ -182,6 +188,9 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		
 		addCacheContent(cache);
 		allEntries.addAll(cache.name2entry.values());
+		name2doc.putAll(cache.name2doc);
+		allTypes.addAll(types);
+		allDocs.addAll(docs);
 	}
 
 	private void createTypeAndDocHierarchy(Type rootT, Doc rootD, int currentDepth, String oldPostfix, BenchCache cache) {
@@ -207,7 +216,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		ExtendingType2Doc__Marker marker = cFactory.createExtendingType2Doc__Marker();
 		cache.markers.add(marker);
 		marker.setCONTEXT__SRC__p(rootPackage);
-		marker.setCONTEXT__CORR__p2f((Package2Folder) p2f);
+		marker.setCONTEXT__CORR__p2f((Package2Folder) rp2rf);
 		marker.setCONTEXT__TRG__f(rootFolder);
 		marker.setCONTEXT__SRC__t(superT);
 		marker.setCONTEXT__CORR__t2d((Type2Doc) cache.src2corr.get(superT));
@@ -440,7 +449,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String newRootName = "DELETE_PRESERVE_" + t.getName();
 
 		createAttrDelta(t, sPackage.getNamedElement_Name(), newRootName, delta);
-		createAttrDelta(d, sPackage.getNamedElement_Name(), newRootName, delta);
+		createAttrDelta(d, tPackage.getNamedElement_Name(), newRootName, delta);
 
 		Type subT = t.getExtendedBy().get(0);
 		Doc subD = d.getSubDocs().get(0);
@@ -451,7 +460,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 			if (!subD.getSubDocs().isEmpty())
 				subD = subD.getSubDocs().get(0);
 
-			Entry newE = createEntry(t.getName().substring(4) + "_new_method", EntryType.METHOD, null);
+			Entry newE = createEntry(t.getName().substring(4) + "_new_method", EntryType.METHOD, null, new BenchCache());
 
 			createObject(newE, delta);
 			createLink(subD, newE, tPackage.getDoc_Entries(), delta);
@@ -465,7 +474,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String newRootName = "DELETE_PRESERVE_" + t.getName();
 
 		createAttrDelta(t, sPackage.getNamedElement_Name(), newRootName, delta);
-		createAttrDelta(d, sPackage.getNamedElement_Name(), newRootName, delta);
+		createAttrDelta(d, tPackage.getNamedElement_Name(), newRootName, delta);
 
 		Type subT = t.getExtendedBy().get(0);
 		Doc subD = d.getSubDocs().get(0);
@@ -482,7 +491,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 		deleteType(subT, delta);
 
-		Entry newE = createEntry(t.getName().substring(4) + "_new_method", EntryType.METHOD, null);
+		Entry newE = createEntry(t.getName().substring(4) + "_new_method", EntryType.METHOD, null, new BenchCache());
 
 		createObject(newE, delta);
 		createLink(subD, newE, tPackage.getDoc_Entries(), delta);
@@ -496,7 +505,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 		createAttrDelta(t, sPackage.getNamedElement_Name(), newRootName + "_a", delta);
 		if (generateConflict)
-			createAttrDelta(d, sPackage.getNamedElement_Name(), newRootName + "_b", delta);
+			createAttrDelta(d, tPackage.getNamedElement_Name(), newRootName + "_b", delta);
 	}
 
 	private void createContradictingMoveConflict(Type t, boolean generateConflict) {
@@ -506,7 +515,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String newRootName = "MOVE_CONFLICT_" + t.getName();
 
 		createAttrDelta(t, sPackage.getNamedElement_Name(), newRootName, delta);
-		createAttrDelta(d, sPackage.getNamedElement_Name(), newRootName, delta);
+		createAttrDelta(d, tPackage.getNamedElement_Name(), newRootName, delta);
 
 		Doc subD1 = d.getSubDocs().get(0);
 		Doc subD2 = d.getSubDocs().get(1);
