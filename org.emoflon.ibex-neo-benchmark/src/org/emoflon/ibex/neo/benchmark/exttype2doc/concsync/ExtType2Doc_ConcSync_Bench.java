@@ -13,6 +13,7 @@ import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.AttributeConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.CorrPreservationConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.DeletePreserveConflict;
+import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.OperationalMultiplicityConflict;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.CRSHelper;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.conflicts.resolution.util.ConflictResolver;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.pattern.IntegrationPattern;
@@ -26,14 +27,14 @@ public class ExtType2Doc_ConcSync_Bench extends IntegrationBench<ExtType2Doc_Con
 	protected int conflict_solved_attr_counter = 0;
 	protected int conflict_solved_delPres_counter = 0;
 	protected int conflict_solved_move_counter = 0;
+	protected int conflict_solved_opmultipl_counter = 0;
 
 	public ExtType2Doc_ConcSync_Bench(String projectName, ExtType2Doc_ConcSync_Params parameters) {
 		super(projectName, parameters);
 	}
 
 	private final IntegrationPattern pattern = new IntegrationPattern(Arrays.asList( //
-			FragmentProvider.APPLY_USER_DELTA //
-			, FragmentProvider.REPAIR //
+			FragmentProvider.REPAIR //
 			, FragmentProvider.RESOLVE_CONFLICTS //
 			, FragmentProvider.REPAIR //
 			, FragmentProvider.RESOLVE_BROKEN_MATCHES //
@@ -54,6 +55,10 @@ public class ExtType2Doc_ConcSync_Bench extends IntegrationBench<ExtType2Doc_Con
 		CRSHelper.forEachResolve(cc, AttributeConflict.class, s -> {
 			s.crs_preferSource();
 			conflict_solved_attr_counter++;
+		});
+		CRSHelper.forEachResolve(cc, OperationalMultiplicityConflict.class, s -> {
+			s.crs_preferSource();
+			conflict_solved_opmultipl_counter++;
 		});
 	};
 

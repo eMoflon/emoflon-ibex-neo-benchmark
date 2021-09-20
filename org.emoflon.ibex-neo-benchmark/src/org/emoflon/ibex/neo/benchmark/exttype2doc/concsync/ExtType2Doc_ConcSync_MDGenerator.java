@@ -86,6 +86,14 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		createContainers();
 		createTypeAndDocHierarchies();
 		createGlossaryEntriesAndLinks();
+		
+		if (corr instanceof SmartEMFResource) {
+			corr.getContents().addAll(allCorrs);
+			protocol.getContents().addAll(allMarkers);
+		} else {
+			((InternalEList<EObject>) corr.getContents()).addAllUnique(allCorrs);
+			((InternalEList<EObject>) protocol.getContents()).addAllUnique(allMarkers);
+		}
 	}
 
 	private void createContainers() {
@@ -145,14 +153,6 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		IntStream.range(0, parameters.num_of_root_types).parallel().forEach(this::createRootTypeAndDoc);
 		((InternalEList<Type>) rootPackage.getTypes()).addAllUnique(allTypes);
 		((InternalEList<Doc>) rootFolder.getDocs()).addAllUnique(allDocs);
-		
-		if (corr instanceof SmartEMFResource) {
-			corr.getContents().addAll(allCorrs);
-			protocol.getContents().addAll(allMarkers);
-		} else {
-			((InternalEList<EObject>) corr.getContents()).addAllUnique(allCorrs);
-			((InternalEList<EObject>) protocol.getContents()).addAllUnique(allMarkers);
-		}
 	}
 
 	private void createRootTypeAndDoc(int index) {
@@ -415,6 +415,9 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 				case PRES_DEL:
 					deltaFunctions.add(this::createDeletePreserveConflict_Horizontal);
 					break;
+				case MULTIPL:
+					deltaFunctions.add(this::createOpMultiplicityConflict);
+					break;
 				default:
 					throw new IllegalArgumentException("No support for conflict type '" + conflictType + "' in horizontal scale orientation!");
 				}
@@ -523,12 +526,39 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		deleteLink(d, subD1, tPackage.getDoc_SubDocs(), delta);
 		createLink(subD2, subD1, tPackage.getDoc_SuperDocs(), delta);
 
+		// TODO switch src & trg
 		if (generateConflict) {
 			Type subT1 = t.getExtendedBy().get(0);
 			Type subT3 = t.getExtendedBy().get(2);
 
 			deleteLink(t, subT1, sPackage.getType_ExtendedBy(), delta);
 			createLink(subT3, subT1, sPackage.getType_ExtendedBy(), delta);
+		}
+	}
+
+	private void createOpMultiplicityConflict(Type t, boolean generateConflict) {
+		Delta delta = createDelta(false, true);
+
+		Doc d = name2doc.get(t.getName());
+		String newRootName = "OPMULTIPL_CONFLICT_" + t.getName();
+
+		createAttrDelta(t, sPackage.getNamedElement_Name(), newRootName, delta);
+		createAttrDelta(d, tPackage.getNamedElement_Name(), newRootName, delta);
+
+		Type subT = t.getExtendedBy().get(0);
+		Doc subD = d.getSubDocs().get(0);
+
+		Method m = subT.getMethods().get(0);
+		Entry e = subD.getEntries().stream().filter(entry -> entry.getName().equals(m.getName())).findFirst().get();
+
+		JavaDoc newJavaDoc = createJavaDoc("_new_javadoc", m, new BenchCache());
+		createObject(newJavaDoc, delta);
+		createLink(m, newJavaDoc, sPackage.getMethod_Docs(), delta);
+		
+		if (generateConflict) {
+			Annotation newAnnotation = createAnnotation("_new_annotation", e, new BenchCache());
+			createObject(newAnnotation, delta);
+			createLink(e, newAnnotation, tPackage.getEntry_Annotations(), delta);
 		}
 	}
 
