@@ -30,8 +30,7 @@ public class ExtType2Doc_ShortCut_Params extends BenchParameters {
 			num_of_root_packages = 1;
 			break;
 		default:
-			num_of_root_packages = -1;
-			break;
+			throw new IllegalArgumentException(scaleOrientation + " is no a supported scale orientation!");
 		}
 
 		horizontal_package_scales = new int[] { 3, 1, 2 };

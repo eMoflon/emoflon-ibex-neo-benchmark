@@ -128,9 +128,9 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		BenchCache cache = new BenchCache();
 		
 		// SRC
-		rootPackage = createRootPackage("", cache);
+		rootPackage = createRootPackage("", cache, true);
 		// TRG
-		rootFolder = createRootFolder("", cache);
+		rootFolder = createRootFolder("", cache, true);
 		// CORR
 		rp2rf = createCorr(cFactory.createPackage2Folder(), rootPackage, rootFolder);
 		cache.corrs.add(rp2rf);
@@ -145,8 +145,6 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCREATE__TRG__f(rootFolder);
 		
 		addCacheContent(cache);
-		((InternalEList<Package>) sContainer.getRootPackages()).add(rootPackage);
-		((InternalEList<Folder>) tContainer.getFolders()).add(rootFolder);
 	}
 
 	private void createTypeAndDocHierarchies() {
@@ -156,19 +154,15 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 	}
 
 	private void createRootTypeAndDoc(int index) {
-		Collection<Type> types = new LinkedList<>();
-		LinkedList<Doc> docs = new LinkedList<>();
 		BenchCache cache = new BenchCache();
 		
 		String postfix = SEP + index;
 
 		// SRC
-		Type t = createType(postfix, false, rootPackage, cache);
+		Type t = createType(postfix, false, rootPackage, cache, false);
 		rootTypes.add(t);
-		types.add(t);
 		// TRG
-		Doc d = createDoc(postfix, rootFolder, cache);
-		docs.add(d);
+		Doc d = createDoc(postfix, rootFolder, cache, false);
 		// CORR
 		Type2Doc t2d = createCorr(cFactory.createType2Doc(), t, d, cache);
 		// MARKER
@@ -189,8 +183,8 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		addCacheContent(cache);
 		allEntries.addAll(cache.name2entry.values());
 		name2doc.putAll(cache.name2doc);
-		allTypes.addAll(types);
-		allDocs.addAll(docs);
+		allTypes.addAll(cache.name2type.values());
+		allDocs.addAll(cache.name2doc.values());
 	}
 
 	private void createTypeAndDocHierarchy(Type rootT, Doc rootD, int currentDepth, String oldPostfix, BenchCache cache) {
@@ -205,10 +199,10 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Type t = createType(postfix, false, rootPackage, cache);
+		Type t = createType(postfix, false, rootPackage, cache, false);
 		createTypeInheritance(superT, t);
 		// TRG
-		Doc d = createDoc(postfix, rootFolder, cache);
+		Doc d = createDoc(postfix, rootFolder, cache, false);
 		createDocLink(superD, d);
 		// CORR
 		Type2Doc t2d = createCorr(cFactory.createType2Doc(), t, d, cache);
@@ -250,9 +244,9 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Method m = createMethod(postfix, t, cache);
+		Method m = createMethod(postfix, t, cache, true);
 		// TRG
-		Entry e = createEntry(postfix, EntryType.METHOD, d, cache);
+		Entry e = createEntry(postfix, EntryType.METHOD, d, cache, true);
 		// CORR
 		Method2Entry m2e = createCorr(cFactory.createMethod2Entry(), m, e, cache);
 		// MARKER
@@ -278,9 +272,9 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Field f = createField(postfix, t, cache);
+		Field f = createField(postfix, t, cache, true);
 		// TRG
-		Entry e = createEntry(postfix, EntryType.FIELD, d, cache);
+		Entry e = createEntry(postfix, EntryType.FIELD, d, cache, true);
 		// CORR
 		Field2Entry f2e = createCorr(cFactory.createField2Entry(), f, e, cache);
 		// MARKER
@@ -303,7 +297,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Parameter p = createParameter(postfix, m, cache);
+		Parameter p = createParameter(postfix, m, cache, true);
 		// CORR
 		Param2Entry p2e = createCorr(cFactory.createParam2Entry(), p, e, cache);
 		// MARKER
@@ -325,9 +319,9 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		JavaDoc jd = createJavaDoc(postfix, m, cache);
+		JavaDoc jd = createJavaDoc(postfix, m, cache, true);
 		// TRG
-		Annotation a = createAnnotation(postfix, e, cache);
+		Annotation a = createAnnotation(postfix, e, cache, true);
 		// CORR
 		JDoc2Annotation jd2a = createCorr(cFactory.createJDoc2Annotation(), jd, a, cache);
 		// MARKER
@@ -357,7 +351,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = SEP + index;
 
 		// TRG
-		GlossaryEntry ge = createGlossaryEntry(postfix, cache);
+		GlossaryEntry ge = createGlossaryEntry(postfix, cache, true);
 		// MARKER
 		GlossaryEntry__Marker marker = cFactory.createGlossaryEntry__Marker();
 		cache.markers.add(marker);
@@ -463,7 +457,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 			if (!subD.getSubDocs().isEmpty())
 				subD = subD.getSubDocs().get(0);
 
-			Entry newE = createEntry(t.getName().substring(4) + "_new_method", EntryType.METHOD, null, new BenchCache());
+			Entry newE = createEntry(t.getName().substring(4) + "_new_method", EntryType.METHOD, null, new BenchCache(), false);
 
 			createObject(newE, delta);
 			createLink(subD, newE, tPackage.getDoc_Entries(), delta);
@@ -494,7 +488,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 		deleteType(subT, delta);
 
-		Entry newE = createEntry(t.getName().substring(4) + "_new_method", EntryType.METHOD, null, new BenchCache());
+		Entry newE = createEntry(t.getName().substring(4) + "_new_method", EntryType.METHOD, null, new BenchCache(), false);
 
 		createObject(newE, delta);
 		createLink(subD, newE, tPackage.getDoc_Entries(), delta);
@@ -551,12 +545,12 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		Method m = subT.getMethods().get(0);
 		Entry e = subD.getEntries().stream().filter(entry -> entry.getName().equals(m.getName())).findFirst().get();
 
-		JavaDoc newJavaDoc = createJavaDoc("_new_javadoc", m, new BenchCache());
+		JavaDoc newJavaDoc = createJavaDoc("_new_javadoc", null, new BenchCache(), false);
 		createObject(newJavaDoc, delta);
 		createLink(m, newJavaDoc, sPackage.getMethod_Docs(), delta);
 		
 		if (generateConflict) {
-			Annotation newAnnotation = createAnnotation("_new_annotation", e, new BenchCache());
+			Annotation newAnnotation = createAnnotation("_new_annotation", null, new BenchCache(), false);
 			createObject(newAnnotation, delta);
 			createLink(e, newAnnotation, tPackage.getEntry_Annotations(), delta);
 		}

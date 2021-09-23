@@ -100,11 +100,11 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = SEP + index;
 
 		// SRC
-		Package p = createRootPackage(postfix, cache);
+		Package p = createRootPackage(postfix, cache, false);
 		rootPackages.add(p);
 		
 		// TRG
-		Folder f = createRootFolder(postfix, cache);
+		Folder f = createRootFolder(postfix, cache, false);
 		rootFolders.add(f);
 		
 		// CORR
@@ -140,7 +140,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Package p = createPackage(postfix, superP, cache);
+		Package p = createPackage(postfix, superP, cache, true);
 		// CORR
 		Package2Folder p2f = createCorr(cFactory.createPackage2Folder(), p, f);
 		cache.corrs.add(p2f);
@@ -171,9 +171,9 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Type t = createType(postfix, false, p, cache);
+		Type t = createType(postfix, false, p, cache, true);
 		// TRG
-		Doc d = createDoc(postfix, f, cache);
+		Doc d = createDoc(postfix, f, cache, true);
 		// CORR
 		Type2Doc t2d = createCorr(cFactory.createType2Doc(), t, d);
 		cache.corrs.add(t2d);
@@ -206,10 +206,10 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Type t = createType(postfix, false, p, cache);
+		Type t = createType(postfix, false, p, cache, true);
 		createTypeInheritance(superT, t);
 		// TRG
-		Doc d = createDoc(postfix, f, cache);
+		Doc d = createDoc(postfix, f, cache, true);
 		createDocLink(superD, d);
 		// CORR
 		Type2Doc t2d = createCorr(cFactory.createType2Doc(), t, d);
@@ -254,9 +254,9 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Method m = createMethod(postfix, t, cache);
+		Method m = createMethod(postfix, t, cache, true);
 		// TRG
-		Entry e = createEntry(postfix, EntryType.METHOD, d, cache);
+		Entry e = createEntry(postfix, EntryType.METHOD, d, cache, true);
 		// CORR
 		Method2Entry m2e = createCorr(cFactory.createMethod2Entry(), m, e);
 		cache.corrs.add(m2e);
@@ -284,9 +284,9 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Field f = createField(postfix, t, cache);
+		Field f = createField(postfix, t, cache, true);
 		// TRG
-		Entry e = createEntry(postfix, EntryType.FIELD, d, cache);
+		Entry e = createEntry(postfix, EntryType.FIELD, d, cache, true);
 		// CORR
 		Field2Entry f2e = createCorr(cFactory.createField2Entry(), f, e);
 		cache.corrs.add(f2e);
@@ -312,7 +312,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
-		Parameter p = createParameter(postfix, m, cache);
+		Parameter p = createParameter(postfix, m, cache, true);
 		// CORR
 		Param2Entry p2e = createCorr(cFactory.createParam2Entry(), p, e);
 		cache.corrs.add(p2e);
