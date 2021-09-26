@@ -17,7 +17,7 @@ public class ExtType2Doc_LocalCC_Params extends BenchParameters {
 	public final int delta_inheritance_depth;
 
 	public ExtType2Doc_LocalCC_Params(String name, int modelScale, ScaleOrientation scaleOrientation, int numOfChanges) {
-		super(name, modelScale, scaleOrientation);
+		super(name, modelScale, numOfChanges,scaleOrientation);
 
 		num_of_root_types = modelScale;
 		inheritance_depth = 3;

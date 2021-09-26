@@ -6,11 +6,13 @@ public abstract class BenchParameters {
 
 	public final String name;
 	public final int modelScale;
+	public final int changes;
 	public final ScaleOrientation scaleOrientation;
 
-	public BenchParameters(String name, int modelScale, ScaleOrientation scaleOrientation) {
+	public BenchParameters(String name, int modelScale, int changes, ScaleOrientation scaleOrientation) {
 		this.name = name;
 		this.modelScale = modelScale;
+		this.changes = changes;
 		this.scaleOrientation = scaleOrientation;
 	}
 
@@ -47,6 +49,9 @@ public abstract class BenchParameters {
 		builder.append(name);
 		builder.append("_n");
 		builder.append(modelScale);
+		builder.append("_");
+		builder.append("_c");
+		builder.append(changes);
 		builder.append("_");
 		builder.append(scaleOrientation == ScaleOrientation.HORIZONTAL ? "H" : "V");
 		return builder.toString();

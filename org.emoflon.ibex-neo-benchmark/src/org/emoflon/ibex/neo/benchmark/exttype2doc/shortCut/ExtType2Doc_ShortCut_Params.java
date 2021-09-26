@@ -20,7 +20,7 @@ public class ExtType2Doc_ShortCut_Params extends BenchParameters {
 	public final int num_of_changes;
 	
 	public ExtType2Doc_ShortCut_Params(String name, int modelScale, ScaleOrientation scaleOrientation, int numOfChanges, ShortCutDelta deltaType) {
-		super(name, modelScale, scaleOrientation);
+		super(name, modelScale, numOfChanges, scaleOrientation);
 
 		switch (scaleOrientation) {
 		case HORIZONTAL:

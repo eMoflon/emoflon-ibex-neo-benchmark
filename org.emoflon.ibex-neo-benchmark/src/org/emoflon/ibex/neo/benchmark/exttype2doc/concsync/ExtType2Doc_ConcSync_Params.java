@@ -24,7 +24,7 @@ public class ExtType2Doc_ConcSync_Params extends BenchParameters {
 
 	public ExtType2Doc_ConcSync_Params(String name, int modelScale, ScaleOrientation scaleOrientation, //
 			int numOfChanges, double conflictRatio, ConflictType[] conflictTypes) {
-		super(name, modelScale, scaleOrientation);
+		super(name, modelScale, numOfChanges, scaleOrientation);
 
 		switch (scaleOrientation) {
 		case HORIZONTAL:

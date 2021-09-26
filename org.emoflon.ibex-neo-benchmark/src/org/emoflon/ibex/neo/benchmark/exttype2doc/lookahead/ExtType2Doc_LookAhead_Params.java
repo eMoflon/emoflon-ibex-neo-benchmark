@@ -9,7 +9,7 @@ public class ExtType2Doc_LookAhead_Params extends BenchParameters {
 	public final int package_hierarchy_depth;
 
 	public ExtType2Doc_LookAhead_Params(String name, int modelScale, ScaleOrientation scaleOrientation) {
-		super(name, modelScale, scaleOrientation);
+		super(name, modelScale, 0, scaleOrientation);
 		
 		horizontal_package_scale = 2;
 		package_hierarchy_depth = 1;
