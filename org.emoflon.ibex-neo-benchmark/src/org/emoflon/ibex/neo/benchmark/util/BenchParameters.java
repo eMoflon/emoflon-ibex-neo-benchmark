@@ -49,7 +49,6 @@ public abstract class BenchParameters {
 		builder.append(name);
 		builder.append("_n");
 		builder.append(modelScale);
-		builder.append("_");
 		builder.append("_c");
 		builder.append(changes);
 		builder.append("_");

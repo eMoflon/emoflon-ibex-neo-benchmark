@@ -16,7 +16,7 @@ public class ExtType2Doc_LocalCC_Params extends BenchParameters {
 	public final int num_of_changes;
 	public final int delta_inheritance_depth;
 
-	public ExtType2Doc_LocalCC_Params(String name, int modelScale, ScaleOrientation scaleOrientation, int numOfChanges) {
+	public ExtType2Doc_LocalCC_Params(String name, int modelScale, ScaleOrientation scaleOrientation, int numOfChanges, int delta_inheritance_depth) {
 		super(name, modelScale, numOfChanges,scaleOrientation);
 
 		num_of_root_types = modelScale;
@@ -28,7 +28,7 @@ public class ExtType2Doc_LocalCC_Params extends BenchParameters {
 		num_of_javadocs = 1;
 
 		num_of_changes = numOfChanges;
-		delta_inheritance_depth = 3;
+		this.delta_inheritance_depth = delta_inheritance_depth;
 	}
 
 	public ExtType2Doc_LocalCC_Params(String[] args) {
@@ -36,7 +36,8 @@ public class ExtType2Doc_LocalCC_Params extends BenchParameters {
 				args[0], // name
 				Integer.valueOf(args[1]), // model scale
 				ScaleOrientation.valueOf(args[2]), // scale orientation
-				Integer.valueOf(args[3]) // number of changes
+				Integer.valueOf(args[3]), // number of changes
+				Integer.valueOf(args[4]) // inheritance depth
 		);
 	}
 
@@ -46,7 +47,8 @@ public class ExtType2Doc_LocalCC_Params extends BenchParameters {
 				name, //
 				String.valueOf(modelScale), //
 				scaleOrientation.toString(), //
-				String.valueOf(num_of_changes) //
+				String.valueOf(num_of_changes), //
+				String.valueOf(delta_inheritance_depth) //
 		};
 	}
 
@@ -56,7 +58,8 @@ public class ExtType2Doc_LocalCC_Params extends BenchParameters {
 				"name", //
 				"model_scale", //
 				"scale_orientation", //
-				"changes" //
+				"changes", //
+				"inheritanceDepth"
 		};
 	}
 

@@ -12,31 +12,40 @@ import org.emoflon.ibex.neo.benchmark.util.ScaleOrientation;
 public class ExtType2Doc_LocalCC_ScaledBenchRunner {
 
 	public static void main(String[] args) throws Exception {
-		List<String[]> execArgs = scaledModel_constChanges();
+		List<String[]> execArgs = scaledModel_changes();
 
 		ScaledBenchRunner<ExtType2Doc_LocalCC_Bench, ExtType2Doc_LocalCC_Params> runner = new ScaledBenchRunner<>( //
 				ExtType2Doc_LocalCC_Bench.class, ExtType2Doc_LocalCC_Params.class, //
-				Arrays.asList("-Xmx28G"), execArgs, 20);
+				Arrays.asList("-Xmx28G"), execArgs, 1);
 		runner.run();
 	}
 
-	private static List<String[]> scaledModel_constChanges() {
+	private static List<String[]> scaledModel_changes() {
 		int[] modelSize = { //
-				100, 200, 300, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000 //
+				//100, 200, 300, 500//, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000 //
+				300
+		};
+		
+		int[] changes = { //
+				//100, 200, 300, 500//, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000 //
+				100, 200, 300
 		};
 
-		int changes = 100;
+		int delta_inheritance_depth = 5;
 
 		List<String[]> scale = new LinkedList<>();
 
-		for (int i = 0; i < modelSize.length; i++) {
-			String[] vars = new ExtType2Doc_LocalCC_Params( //
-					"scaledModel_constChanges", //
-					modelSize[i], //
-					ScaleOrientation.HORIZONTAL, //
-					changes //
-			).serializeInputParameters();
-			scale.add(vars);
+		for (int n = 0; n < modelSize.length; n++) {
+			for(int c = 0; c < changes.length; c++) {
+				String[] vars = new ExtType2Doc_LocalCC_Params( //
+						"scaledModel_constChanges", //
+						modelSize[n], //
+						ScaleOrientation.HORIZONTAL, //
+						changes[c], //
+						delta_inheritance_depth //
+						).serializeInputParameters();
+				scale.add(vars);
+			}
 		}
 
 		return scale;
