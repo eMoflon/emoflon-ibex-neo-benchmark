@@ -307,13 +307,13 @@ public class ExtType2Doc_LocalCC_MDGenerator extends ExtType2Doc_MDGenerator<Ext
 		JDoc2Annotation jd2a = createCorr(cFactory.createJDoc2Annotation(), jd, a, cache);
 		// MARKER
 		JDoc2Annotation__Marker marker = cFactory.createJDoc2Annotation__Marker();
+		cache.markers.add(marker);
 		marker.setCONTEXT__SRC__m(m);
 		marker.setCONTEXT__CORR__m2e((Method2Entry) cache.src2corr.get(m));
 		marker.setCONTEXT__TRG__e(e);
 		marker.setCREATE__SRC__j(jd);
 		marker.setCREATE__CORR__j2a(jd2a);
 		marker.setCREATE__TRG__a(a);
-		protocol.getContents().add(marker);
 	}
 
 	//// DELTA ////
