@@ -57,15 +57,15 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 	private Package rootPackage;
 	private Folder rootFolder;
 	Package2Folder rp2rf;
-	
+
 	private List<Type> rootTypes = Collections.synchronizedList(new LinkedList<>());
 
 	private int glossaryLinkCounter;
-	
+
 	private Collection<Type> allTypes = Collections.synchronizedList(new LinkedList<>());
 	private Collection<Doc> allDocs = Collections.synchronizedList(new LinkedList<>());
 	private Collection<Entry> allEntries = Collections.synchronizedList(new LinkedList<>());
-	
+
 	private Map<String, Doc> name2doc = Collections.synchronizedMap(new HashMap<>());
 
 	public ExtType2Doc_ConcSync_MDGenerator(Resource source, Resource target, Resource corr, Resource protocol, Resource delta) {
@@ -86,7 +86,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		createContainers();
 		createTypeAndDocHierarchies();
 		createGlossaryEntriesAndLinks();
-		
+
 		if (corr instanceof SmartEMFResource) {
 			corr.getContents().addAll(allCorrs);
 			protocol.getContents().addAll(allMarkers);
@@ -104,7 +104,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		// CORR
 		pr2dc = createCorr(cFactory.createProject2DocContainer(), sContainer, tContainer);
 		allCorrs.add(pr2dc);
-		
+
 		// MARKER
 		Project2DocCont__Marker marker0 = cFactory.createProject2DocCont__Marker();
 		allMarkers.add(marker0);
@@ -126,7 +126,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 	private void createRootPackageAndFolder() {
 		BenchCache cache = new BenchCache();
-		
+
 		// SRC
 		rootPackage = createRootPackage("", cache, true);
 		// TRG
@@ -143,7 +143,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCREATE__SRC__p(rootPackage);
 		marker.setCREATE__CORR__p2f(rp2rf);
 		marker.setCREATE__TRG__f(rootFolder);
-		
+
 		addCacheContent(cache);
 	}
 
@@ -155,7 +155,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 	private void createRootTypeAndDoc(int index) {
 		BenchCache cache = new BenchCache();
-		
+
 		String postfix = SEP + index;
 
 		// SRC
@@ -178,8 +178,8 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		createMethodsAndEntries(t, d, postfix, cache);
 		createFieldsAndEntries(t, d, postfix, cache);
 
-		createTypeAndDocHierarchy(t, d, 1, postfix, cache);
-		
+		createTypeAndDocHierarchy(t, d, postfix, cache);
+
 		addCacheContent(cache);
 		allEntries.addAll(cache.name2entry.values());
 		name2doc.putAll(cache.name2doc);
@@ -187,23 +187,53 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		allDocs.addAll(cache.name2doc.values());
 	}
 
-	private void createTypeAndDocHierarchy(Type rootT, Doc rootD, int currentDepth, String oldPostfix, BenchCache cache) {
-		if (currentDepth >= parameters.inheritance_depth)
-			return;
+	private class TypeDocContainer {
+		final Type type;
+		final Doc doc;
+		final String postfix;
 
-		for (int i = 0; i < parameters.horizontal_inheritance_scale; i++)
-			createTypeAndDocInheritance(rootT, rootD, currentDepth, oldPostfix, i, cache);
+		public TypeDocContainer(Type type, Doc doc, String postfix) {
+			this.type = type;
+			this.doc = doc;
+			this.postfix = postfix;
+		}
 	}
 
-	private void createTypeAndDocInheritance(Type superT, Doc superD, int currentDepth, String oldPostfix, int index, BenchCache cache) {
-		String postfix = oldPostfix + SEP + index;
+	private void createTypeAndDocHierarchy(Type rootT, Doc rootD, String oldPostfix, BenchCache cache) {
+		List<TypeDocContainer> currentTypeDocContainers = new LinkedList<>();
+		currentTypeDocContainers.add(new TypeDocContainer(rootT, rootD, oldPostfix));
+
+		for (int i = 1; i < parameters.inheritance_depth; i++) {
+			List<TypeDocContainer> nextTypeDocContainers = new LinkedList<>();
+			for (TypeDocContainer currentCont : currentTypeDocContainers) {
+				for (int j = 0; j < parameters.horizontal_inheritance_scale; j++) {
+					switch (parameters.scaleOrientation) {
+					case HORIZONTAL:
+						nextTypeDocContainers.add(createTypeAndDocInheritance(currentCont, j, cache));
+						break;
+					case VERTICAL:
+						TypeDocContainer newCont = createTypeAndDocInheritance(currentCont, j, cache);
+						if (j == 0)
+							nextTypeDocContainers.add(newCont);
+						break;
+					default:
+						break;
+					}
+				}
+			}
+			currentTypeDocContainers = nextTypeDocContainers;
+		}
+	}
+
+	private TypeDocContainer createTypeAndDocInheritance(TypeDocContainer superTypeDoc, int index, BenchCache cache) {
+		String postfix = superTypeDoc.postfix + SEP + index;
 
 		// SRC
 		Type t = createType(postfix, false, rootPackage, cache, false);
-		createTypeInheritance(superT, t);
+		createTypeInheritance(superTypeDoc.type, t);
 		// TRG
 		Doc d = createDoc(postfix, rootFolder, cache, false);
-		createDocLink(superD, d);
+		createDocLink(superTypeDoc.doc, d);
 		// CORR
 		Type2Doc t2d = createCorr(cFactory.createType2Doc(), t, d, cache);
 		// MARKER
@@ -212,9 +242,9 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		marker.setCONTEXT__SRC__p(rootPackage);
 		marker.setCONTEXT__CORR__p2f((Package2Folder) rp2rf);
 		marker.setCONTEXT__TRG__f(rootFolder);
-		marker.setCONTEXT__SRC__t(superT);
-		marker.setCONTEXT__CORR__t2d((Type2Doc) cache.src2corr.get(superT));
-		marker.setCONTEXT__TRG__d(superD);
+		marker.setCONTEXT__SRC__t(superTypeDoc.type);
+		marker.setCONTEXT__CORR__t2d((Type2Doc) cache.src2corr.get(superTypeDoc.type));
+		marker.setCONTEXT__TRG__d(superTypeDoc.doc);
 		marker.setCREATE__SRC__nt(t);
 		marker.setCREATE__CORR__nt2nd(t2d);
 		marker.setCREATE__TRG__nd(d);
@@ -222,17 +252,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		createMethodsAndEntries(t, d, postfix, cache);
 		createFieldsAndEntries(t, d, postfix, cache);
 
-		switch (parameters.scaleOrientation) {
-		case HORIZONTAL:
-			createTypeAndDocHierarchy(t, d, currentDepth + 1, postfix, cache);
-			break;
-		case VERTICAL:
-			if (index == 0)
-				createTypeAndDocHierarchy(t, d, currentDepth + 1, postfix, cache);
-			break;
-		default:
-			break;
-		}
+		return new TypeDocContainer(t, d, postfix);
 	}
 
 	private void createMethodsAndEntries(Type t, Doc d, String oldPostfix, BenchCache cache) {
@@ -337,13 +357,13 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 	private void createGlossaryEntriesAndLinks() {
 		BenchCache cache = new BenchCache();
-		
+
 		for (int i = 0; i < parameters.num_of_glossar_entries; i++)
 			createGlossaryEntry(i, cache);
-		
+
 		for (Entry e : allEntries)
 			createGlossaryLinks(e, cache);
-		
+
 		addCacheContent(cache);
 	}
 
@@ -368,7 +388,6 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		String glossaryEntryName = "GlossaryEntry" + SEP + (glossaryLinkCounter % parameters.num_of_glossar_entries);
 		GlossaryEntry ge = cache.name2glossaryEntry.get(glossaryEntryName);
 		glossaryLinkCounter++;
-		
 
 		// TRG
 		createGlossaryLink(e, ge);
@@ -387,6 +406,9 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 
 		int num_of_conflicts = (int) (parameters.num_of_changes * parameters.conflict_ratio);
 		for (int i = 0; i < parameters.num_of_changes; i++) {
+			if (i >= rootTypes.size())
+				return;
+
 			int deltaIndex = i % deltaFunctions.size();
 			boolean generateConflict = i <= num_of_conflicts;
 			deltaFunctions.get(deltaIndex).accept(rootTypes.get(i), generateConflict);
@@ -548,7 +570,7 @@ public class ExtType2Doc_ConcSync_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 		JavaDoc newJavaDoc = createJavaDoc("_new_javadoc", null, new BenchCache(), false);
 		createObject(newJavaDoc, delta);
 		createLink(m, newJavaDoc, sPackage.getMethod_Docs(), delta);
-		
+
 		if (generateConflict) {
 			Annotation newAnnotation = createAnnotation("_new_annotation", null, new BenchCache(), false);
 			createObject(newAnnotation, delta);

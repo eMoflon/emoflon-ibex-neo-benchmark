@@ -36,7 +36,7 @@ public class ExtType2Doc_ConcSync_Params extends BenchParameters {
 			inheritance_depth = modelScale;
 			break;
 		default:
-			throw new IllegalArgumentException(scaleOrientation + " is no a supported scale orientation!");
+			throw new IllegalArgumentException(scaleOrientation + " is not a supported scale orientation!");
 		}
 
 		horizontal_inheritance_scale = 3;
