@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.InternalEList;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.BenchCache;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.ExtType2Doc_MDGenerator;
-import org.moflon.smartemf.persistence.SmartEMFResource;
+import org.emoflon.smartemf.persistence.SmartEMFResource;
 
 import ExtDocModel.Doc;
 import ExtDocModel.Entry;

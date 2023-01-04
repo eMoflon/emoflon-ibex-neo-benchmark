@@ -15,7 +15,7 @@ import org.emoflon.ibex.neo.benchmark.util.BenchEntry;
 import org.emoflon.ibex.neo.benchmark.util.BenchParameters;
 import org.emoflon.ibex.tgg.operational.strategies.OperationalStrategy;
 import org.emoflon.ibex.tgg.operational.strategies.modules.TGGResourceHandler;
-import org.moflon.smartemf.persistence.SmartEMFResourceFactoryImpl;
+import org.emoflon.smartemf.persistence.SmartEMFResourceFactoryImpl;
 
 import delta.impl.DeltaPackageImpl;
 
