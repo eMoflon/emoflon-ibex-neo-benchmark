@@ -2,7 +2,7 @@
 
 ## How to Run
 
-1. Follow the instructions of eMoflon::IBeX developement setup until point 12 at:<br>
+1. Follow the instructions of eMoflon::IBeX developement setup until point 11 at:<br>
    https://github.com/eMoflon/emoflon-ibex/blob/master/README.md
 3. Set up your runtime workspace by starting a runtime Eclipse Application from your development workspace:
     - To start the runtime workspace, do the following steps inside your development workspace: Run -> Run Configurations...; double click on Eclipse Application, give it a name (e.g. benchmark-workspace) and click on Run.
