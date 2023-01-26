@@ -75,7 +75,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		return g;
 	}
 
-	protected Package createRootPackage(String postfix, BenchCache cache, boolean addToParent) {
+	protected Package createRootPackage(String postfix, ExtType2Doc_BenchCache cache, boolean addToParent) {
 		Package p = sFactory.createPackage();
 		p.setName("Package" + postfix);
 		if (addToParent)
@@ -85,7 +85,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		return p;
 	}
 
-	protected Package createPackage(String postfix, Package superPackage, BenchCache cache, boolean addToParent) {
+	protected Package createPackage(String postfix, Package superPackage, ExtType2Doc_BenchCache cache, boolean addToParent) {
 		Package p = sFactory.createPackage();
 		p.setName("Package" + postfix);
 		if (addToParent)
@@ -95,7 +95,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		return p;
 	}
 
-	protected Folder createRootFolder(String postfix, BenchCache cache, boolean addToParent) {
+	protected Folder createRootFolder(String postfix, ExtType2Doc_BenchCache cache, boolean addToParent) {
 		Folder f = tFactory.createFolder();
 		f.setName("Package" + postfix);
 		if (addToParent)
@@ -105,7 +105,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		return f;
 	}
 
-	protected Folder createFolder(String postfix, Folder superFolder, BenchCache cache, boolean addToParent) {
+	protected Folder createFolder(String postfix, Folder superFolder, ExtType2Doc_BenchCache cache, boolean addToParent) {
 		Folder f = tFactory.createFolder();
 		f.setName("Package" + postfix);
 		if (addToParent)
@@ -115,7 +115,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		return f;
 	}
 
-	protected Type createType(String postfix, boolean isInterface, Package p, BenchCache cache, boolean addToParent) {
+	protected Type createType(String postfix, boolean isInterface, Package p, ExtType2Doc_BenchCache cache, boolean addToParent) {
 		Type t = sFactory.createType();
 		t.setName("Type" + postfix);
 		t.setInterface(isInterface);
@@ -126,7 +126,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		return t;
 	}
 
-	protected Doc createDoc(String postfix, Folder f, BenchCache cache, boolean addToParent) {
+	protected Doc createDoc(String postfix, Folder f, ExtType2Doc_BenchCache cache, boolean addToParent) {
 		Doc d = tFactory.createDoc();
 		d.setName("Type" + postfix);
 		if (addToParent)
@@ -144,7 +144,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		((InternalEList<Doc>) superDoc.getSubDocs()).addUnique(subDoc);
 	}
 
-	protected Method createMethod(String postfix, Type t, BenchCache cache, boolean addToParent) {
+	protected Method createMethod(String postfix, Type t, ExtType2Doc_BenchCache cache, boolean addToParent) {
 		Method m = sFactory.createMethod();
 		m.setName("Method" + postfix);
 		if (addToParent)
@@ -154,7 +154,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		return m;
 	}
 
-	protected Field createField(String postfix, Type t, BenchCache cache, boolean addToParent) {
+	protected Field createField(String postfix, Type t, ExtType2Doc_BenchCache cache, boolean addToParent) {
 		Field f = sFactory.createField();
 		f.setName("Field" + postfix);
 		if (addToParent)
@@ -164,7 +164,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		return f;
 	}
 
-	protected Entry createEntry(String postfix, EntryType entryType, Doc d, BenchCache cache, boolean addToParent) {
+	protected Entry createEntry(String postfix, EntryType entryType, Doc d, ExtType2Doc_BenchCache cache, boolean addToParent) {
 		Entry e = tFactory.createEntry();
 		String name = entryType == EntryType.METHOD ? "Method" : "Field";
 		e.setName(name + postfix);
@@ -176,7 +176,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		return e;
 	}
 
-	protected Parameter createParameter(String postfix, Method m, BenchCache cache, boolean addToParent) {
+	protected Parameter createParameter(String postfix, Method m, ExtType2Doc_BenchCache cache, boolean addToParent) {
 		Parameter p = sFactory.createParameter();
 		p.setName("Param" + postfix);
 		if (addToParent)
@@ -186,7 +186,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		return p;
 	}
 
-	protected JavaDoc createJavaDoc(String postfix, Method m, BenchCache cache, boolean addToParent) {
+	protected JavaDoc createJavaDoc(String postfix, Method m, ExtType2Doc_BenchCache cache, boolean addToParent) {
 		JavaDoc jd = sFactory.createJavaDoc();
 		jd.setComment("JavaDoc" + postfix);
 		if (addToParent)
@@ -196,7 +196,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		return jd;
 	}
 
-	protected Annotation createAnnotation(String postfix, Entry e, BenchCache cache, boolean addToParent) {
+	protected Annotation createAnnotation(String postfix, Entry e, ExtType2Doc_BenchCache cache, boolean addToParent) {
 		Annotation a = tFactory.createAnnotation();
 		a.setValue("JavaDoc" + postfix);
 		if (addToParent)
@@ -206,7 +206,7 @@ public abstract class ExtType2Doc_MDGenerator<CF extends EFactory, BP extends Be
 		return a;
 	}
 
-	protected GlossaryEntry createGlossaryEntry(String postfix, BenchCache cache, boolean addToParent) {
+	protected GlossaryEntry createGlossaryEntry(String postfix, ExtType2Doc_BenchCache cache, boolean addToParent) {
 		GlossaryEntry ge = tFactory.createGlossaryEntry();
 		ge.setName("GlossaryEntry" + postfix);
 		ge.setGlossary(tContainer.getGlossary());
