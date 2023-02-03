@@ -8,8 +8,9 @@ public class Village2ConstrPlan_Params extends BenchParameters {
 	public final int num_of_streets;
 	public final int street_length;
 	public final int num_of_changes;
+	public final DeltaType delta_type;
 
-	public Village2ConstrPlan_Params(String name, int modelScale, int numOfChanges, ScaleOrientation scaleOrientation) {
+	public Village2ConstrPlan_Params(String name, int modelScale, int numOfChanges, ScaleOrientation scaleOrientation, DeltaType deltaType) {
 		super(name, modelScale, numOfChanges, scaleOrientation);
 
 		switch (scaleOrientation) {
@@ -26,6 +27,7 @@ public class Village2ConstrPlan_Params extends BenchParameters {
 		}
 
 		num_of_changes = numOfChanges;
+		delta_type = deltaType;
 	}
 
 	public Village2ConstrPlan_Params(String[] args) {
@@ -33,7 +35,8 @@ public class Village2ConstrPlan_Params extends BenchParameters {
 				args[0], // name
 				Integer.valueOf(args[1]), // model scale
 				Integer.valueOf(args[2]), // number of changes
-				ScaleOrientation.valueOf(args[3]) // scale orientation
+				ScaleOrientation.valueOf(args[3]), // scale orientation
+				DeltaType.valueOf(args[4]) // delta type
 		);
 	}
 
@@ -43,7 +46,8 @@ public class Village2ConstrPlan_Params extends BenchParameters {
 				name, //
 				String.valueOf(modelScale), //
 				String.valueOf(num_of_changes), //
-				scaleOrientation.toString() //
+				scaleOrientation.toString(), //
+				delta_type.toString() //
 		};
 	}
 
@@ -53,7 +57,8 @@ public class Village2ConstrPlan_Params extends BenchParameters {
 				"name", //
 				"model_scale", //
 				"num_of_changes", //
-				"scale_orientation" //
+				"scale_orientation", //
+				"delta_type"
 		};
 	}
 

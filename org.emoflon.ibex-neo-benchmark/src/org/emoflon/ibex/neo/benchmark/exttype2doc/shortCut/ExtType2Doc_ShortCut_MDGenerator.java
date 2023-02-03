@@ -353,7 +353,7 @@ public class ExtType2Doc_ShortCut_MDGenerator extends ExtType2Doc_MDGenerator<Ex
 				break;
 			}
 			deltaCount++;
-			if(deltaCount >= parameters.num_of_changes) {
+			if (deltaCount >= parameters.num_of_changes) {
 				return;
 			}
 		}

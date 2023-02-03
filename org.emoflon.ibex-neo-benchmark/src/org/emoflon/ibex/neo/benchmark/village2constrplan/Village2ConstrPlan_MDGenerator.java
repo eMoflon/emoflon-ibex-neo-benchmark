@@ -32,6 +32,7 @@ import Village2ConstrPlan.Villa2Constr__Marker;
 import Village2ConstrPlan.Village2ConstrPlanFactory;
 import Village2ConstrPlan.VillageSquare2PlanCollection;
 import Village2ConstrPlan.VillageSquare2PlanCollection__Marker;
+import delta.Delta;
 
 public class Village2ConstrPlan_MDGenerator extends
 		ModelAndDeltaGenerator<Village2ConstrPlanFactory, VillageFactory, VillagePackage, ConstructionPlanFactory, ConstructionPlanPackage, Village2ConstrPlan_Params> {
@@ -87,8 +88,10 @@ public class Village2ConstrPlan_MDGenerator extends
 		h.setName("House" + postfix);
 		if (addToParent)
 			sContainer.getStreetCorner().add(h);
-		cache.name2house.put(h.getName(), h);
-		cache.numOfElements++;
+		if (cache != null) {
+			cache.name2house.put(h.getName(), h);
+			cache.numOfElements++;
+		}
 		return h;
 	}
 
@@ -99,8 +102,10 @@ public class Village2ConstrPlan_MDGenerator extends
 		h.setType(type);
 		if (addToParent)
 			prevHouse.setNextHouse(h);
-		cache.name2house.put(h.getName(), h);
-		cache.numOfElements++;
+		if (cache != null) {
+			cache.name2house.put(h.getName(), h);
+			cache.numOfElements++;
+		}
 		return h;
 	}
 
@@ -109,8 +114,10 @@ public class Village2ConstrPlan_MDGenerator extends
 		p.setName("Plan" + postfix);
 		if (addToParent)
 			tContainer.getPlans().add(p);
-		cache.name2plan.put(p.getName(), p);
-		cache.numOfElements++;
+		if (cache != null) {
+			cache.name2plan.put(p.getName(), p);
+			cache.numOfElements++;
+		}
 		return p;
 	}
 
@@ -119,8 +126,10 @@ public class Village2ConstrPlan_MDGenerator extends
 		c.setName("Construction" + postfix);
 		if (addToParent)
 			p.getConstructions().add(c);
-		cache.name2constr.put(c.getName(), c);
-		cache.numOfElements++;
+		if (cache != null) {
+			cache.name2constr.put(c.getName(), c);
+			cache.numOfElements++;
+		}
 		return c;
 	}
 
@@ -180,7 +189,7 @@ public class Village2ConstrPlan_MDGenerator extends
 		// CORR
 		vs2pc = createCorr(cFactory.createVillageSquare2PlanCollection(), sContainer, tContainer);
 		allCorrs.add(vs2pc);
-		
+
 		// MARKER
 		VillageSquare2PlanCollection__Marker marker = cFactory.createVillageSquare2PlanCollection__Marker();
 		allMarkers.add(marker);
@@ -252,7 +261,7 @@ public class Village2ConstrPlan_MDGenerator extends
 		Basement bt = createBasement(cl, true);
 		// CORR
 		House2Constr h2c = createCorr(cFactory.createHouse2Constr(), h, c, cache);
-		
+
 		// MARKER
 		Cube2Constr__Marker marker = cFactory.createCube2Constr__Marker();
 		cache.markers.add(marker);
@@ -265,7 +274,7 @@ public class Village2ConstrPlan_MDGenerator extends
 		marker.setCONTEXT__CORR__h2cst((House2Constr) cache.src2corr.get(h));
 		marker.setCONTEXT__TRG__p(p);
 		marker.setCONTEXT__TRG__cst(prevC);
-		
+
 		if (parameters.street_length > currentDepth)
 			createVillaAndConstr(h, c, p, currentDepth + 1, postfix, cache);
 	}
@@ -279,7 +288,7 @@ public class Village2ConstrPlan_MDGenerator extends
 		SaddleRoof sr = createSaddleRoof(bt, true);
 		// CORR
 		House2Constr h2c = createCorr(cFactory.createHouse2Constr(), h, c, cache);
-		
+
 		// MARKER
 		Villa2Constr__Marker marker = cFactory.createVilla2Constr__Marker();
 		cache.markers.add(marker);
@@ -292,7 +301,7 @@ public class Village2ConstrPlan_MDGenerator extends
 		marker.setCONTEXT__CORR__h2cst((House2Constr) cache.src2corr.get(h));
 		marker.setCONTEXT__TRG__p(p);
 		marker.setCONTEXT__TRG__cst(prevC);
-		
+
 		if (parameters.street_length > currentDepth)
 			createCubeAndConstr(h, c, p, currentDepth + 1, postfix, cache);
 	}
@@ -301,8 +310,40 @@ public class Village2ConstrPlan_MDGenerator extends
 
 	@Override
 	protected void genDelta() {
-		// TODO Auto-generated method stub
+		int deltaCount = 0;
+		for (House h : rootHouses) {
+			switch (parameters.delta_type) {
+			case ADD_ROOT -> addRoot(h);
+			case REMOVE_ROOT -> removeRoot(h);
+			default -> throw new IllegalArgumentException(parameters.delta_type + " is no a supported delta type!");
+			}
+			deltaCount++;
+			if (deltaCount >= parameters.num_of_changes)
+				return;
+		}
+	}
 
+	protected void addRoot(House h) {
+		Delta delta = createDelta(false, true);
+
+		House newRoot = createHouse("_ROOT", null, HouseType.CORNER, null, false);
+
+		createObject(newRoot, delta);
+		createLink(sContainer, newRoot, sPackage.getVillageSquare_StreetCorner(), delta);
+		createLink(newRoot, h, sPackage.getHouse_NextHouse(), delta);
+		createAttrDelta(h, sPackage.getHouse_Type(), HouseType.CUBE, delta);
+	}
+
+	protected void removeRoot(House h) {
+		Delta delta = createDelta(false, true);
+
+		House nH = h.getNextHouse();
+
+		deleteObject(h, delta);
+		deleteLink(h, nH, sPackage.getHouse_NextHouse(), delta);
+		deleteLink(sContainer, h, sPackage.getVillageSquare_StreetCorner(), delta);
+		createLink(sContainer, nH, sPackage.getVillageSquare_StreetCorner(), delta);
+		createAttrDelta(h, sPackage.getHouse_Type(), HouseType.CORNER, delta);
 	}
 
 }
