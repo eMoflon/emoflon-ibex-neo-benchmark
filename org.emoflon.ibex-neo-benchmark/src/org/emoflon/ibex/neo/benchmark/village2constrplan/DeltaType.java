@@ -2,6 +2,6 @@ package org.emoflon.ibex.neo.benchmark.village2constrplan;
 
 public enum DeltaType {
 	
-	ADD_ROOT, REMOVE_ROOT
+	ADD_ROOT, REMOVE_ROOT, MOVE_ROW
 	
 }

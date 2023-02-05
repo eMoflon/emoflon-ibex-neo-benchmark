@@ -1,8 +1,8 @@
 package org.emoflon.ibex.neo.benchmark.village2constrplan;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import org.eclipse.emf.ecore.EObject;
@@ -40,8 +40,8 @@ public class Village2ConstrPlan_MDGenerator extends
 	protected VillageSquare sContainer;
 	protected PlanCollection tContainer;
 	protected VillageSquare2PlanCollection vs2pc;
-	protected Collection<House> rootHouses = Collections.synchronizedList(new LinkedList<>());
-	protected Collection<Plan> plans = Collections.synchronizedList(new LinkedList<>());
+	protected List<House> rootHouses = Collections.synchronizedList(new LinkedList<>());
+	protected List<Plan> plans = Collections.synchronizedList(new LinkedList<>());
 
 	public Village2ConstrPlan_MDGenerator(Resource source, Resource target, Resource corr, Resource protocol, Resource delta) {
 		super(source, target, corr, protocol, delta);
@@ -309,16 +309,18 @@ public class Village2ConstrPlan_MDGenerator extends
 
 	@Override
 	protected void genDelta() {
-		int deltaCount = 0;
-		for (House h : rootHouses) {
+		for (int i = 0; i < parameters.num_of_changes; i++) {
+			House h = rootHouses.get(i);
+
 			switch (parameters.delta_type) {
 			case ADD_ROOT -> addRoot(h);
 			case REMOVE_ROOT -> removeRoot(h);
+			case MOVE_ROW -> {
+				if (i % 2 == 0 && i + 1 < parameters.num_of_changes)
+					moveRow(h, rootHouses.get(i + 1));
+			}
 			default -> throw new IllegalArgumentException(parameters.delta_type + " is no a supported delta type!");
 			}
-			deltaCount++;
-			if (deltaCount >= parameters.num_of_changes)
-				return;
 		}
 	}
 
@@ -336,13 +338,25 @@ public class Village2ConstrPlan_MDGenerator extends
 	protected void removeRoot(House h) {
 		Delta delta = createDelta(false, true);
 
-		House nH = h.getNextHouse();
+		House nextH = h.getNextHouse();
 
 		deleteObject(h, delta);
-		deleteLink(h, nH, sPackage.getHouse_NextHouse(), delta);
+		deleteLink(h, nextH, sPackage.getHouse_NextHouse(), delta);
 		deleteLink(sContainer, h, sPackage.getVillageSquare_StreetCorner(), delta);
-		createLink(sContainer, nH, sPackage.getVillageSquare_StreetCorner(), delta);
-		createAttrDelta(nH, sPackage.getHouse_Type(), HouseType.CORNER, delta);
+		createLink(sContainer, nextH, sPackage.getVillageSquare_StreetCorner(), delta);
+		createAttrDelta(nextH, sPackage.getHouse_Type(), HouseType.CORNER, delta);
+	}
+
+	protected void moveRow(House firstH, House secondH) {
+		Delta delta = createDelta(false, true);
+		
+		House firstNextH = firstH.getNextHouse();
+		House secondLastH = secondH;
+		while (secondLastH.getNextHouse() != null)
+			secondLastH = secondLastH.getNextHouse();
+		
+		deleteLink(firstH, firstNextH, sPackage.getHouse_NextHouse(), delta);
+		createLink(secondLastH, firstNextH, sPackage.getHouse_NextHouse(), delta);
 	}
 
 }
