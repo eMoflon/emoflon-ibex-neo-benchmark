@@ -97,7 +97,6 @@ public class Village2ConstrPlan_MDGenerator extends
 
 	protected House createHouse(String postfix, House prevHouse, HouseType type, Village2ConstrPlan_BenchCache cache, boolean addToParent) {
 		House h = sFactory.createHouse();
-		h.setType(HouseType.CORNER);
 		h.setName("House" + postfix);
 		h.setType(type);
 		if (addToParent)
@@ -123,7 +122,7 @@ public class Village2ConstrPlan_MDGenerator extends
 
 	protected Construction createConstruction(String postfix, Plan p, Village2ConstrPlan_BenchCache cache, boolean addToParent) {
 		Construction c = tFactory.createConstruction();
-		c.setName("Construction" + postfix);
+		c.setName("House" + postfix);
 		if (addToParent)
 			p.getConstructions().add(c);
 		if (cache != null) {
@@ -271,7 +270,7 @@ public class Village2ConstrPlan_MDGenerator extends
 		marker.setCREATE__TRG__cl(cl);
 		marker.setCREATE__TRG__bt(bt);
 		marker.setCONTEXT__SRC__h(prevH);
-		marker.setCONTEXT__CORR__h2cst((House2Constr) cache.src2corr.get(h));
+		marker.setCONTEXT__CORR__h2cst((House2Constr) cache.src2corr.get(prevH));
 		marker.setCONTEXT__TRG__p(p);
 		marker.setCONTEXT__TRG__cst(prevC);
 
@@ -298,7 +297,7 @@ public class Village2ConstrPlan_MDGenerator extends
 		marker.setCREATE__TRG__bt(bt);
 		marker.setCREATE__TRG__sr(sr);
 		marker.setCONTEXT__SRC__h(prevH);
-		marker.setCONTEXT__CORR__h2cst((House2Constr) cache.src2corr.get(h));
+		marker.setCONTEXT__CORR__h2cst((House2Constr) cache.src2corr.get(prevH));
 		marker.setCONTEXT__TRG__p(p);
 		marker.setCONTEXT__TRG__cst(prevC);
 
@@ -343,7 +342,7 @@ public class Village2ConstrPlan_MDGenerator extends
 		deleteLink(h, nH, sPackage.getHouse_NextHouse(), delta);
 		deleteLink(sContainer, h, sPackage.getVillageSquare_StreetCorner(), delta);
 		createLink(sContainer, nH, sPackage.getVillageSquare_StreetCorner(), delta);
-		createAttrDelta(h, sPackage.getHouse_Type(), HouseType.CORNER, delta);
+		createAttrDelta(nH, sPackage.getHouse_Type(), HouseType.CORNER, delta);
 	}
 
 }
