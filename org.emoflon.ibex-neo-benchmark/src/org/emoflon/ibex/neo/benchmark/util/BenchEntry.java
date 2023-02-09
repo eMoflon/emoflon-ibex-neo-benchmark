@@ -42,18 +42,18 @@ public class BenchEntry<BP extends BenchParameters> {
 
 		this.hasAdvancedStats = Boolean.parseBoolean(splitted[splitted.length - 1]);
 		if (hasAdvancedStats) {
-			this.elts = Integer.parseInt(splitted[splitted.length - 11]);
-			this.init = Double.parseDouble(splitted[splitted.length - 10]);
-			this.resolve = Double.parseDouble(splitted[splitted.length - 9]);
-			this.ram = Integer.parseInt(splitted[splitted.length - 8]);
-			this.successRate = Double.parseDouble(splitted[splitted.length - 7]);
+			this.elts = Integer.parseInt(splitted[splitted.length - 12]);
+			this.init = Double.parseDouble(splitted[splitted.length - 11]);
+			this.resolve = Double.parseDouble(splitted[splitted.length - 10]);
+			this.ram = Integer.parseInt(splitted[splitted.length - 9]);
+			this.successRate = Double.parseDouble(splitted[splitted.length - 8]);
 
-			this.eltsCreated = Long.parseLong(splitted[splitted.length - 6]);
-			this.eltsDeleted = Long.parseLong(splitted[splitted.length - 5]);
-			this.matchesFound = Long.parseLong(splitted[splitted.length - 4]);
-			this.matchesRepaired = Long.parseLong(splitted[splitted.length - 3]);
-			this.matchesRevoked = Long.parseLong(splitted[splitted.length - 2]);
-			this.matchesApplied = Long.parseLong(splitted[splitted.length - 1]);
+			this.eltsCreated = Long.parseLong(splitted[splitted.length - 7]);
+			this.eltsDeleted = Long.parseLong(splitted[splitted.length - 6]);
+			this.matchesFound = Long.parseLong(splitted[splitted.length - 5]);
+			this.matchesRepaired = Long.parseLong(splitted[splitted.length - 4]);
+			this.matchesRevoked = Long.parseLong(splitted[splitted.length - 3]);
+			this.matchesApplied = Long.parseLong(splitted[splitted.length - 2]);
 		} else {
 			this.elts = Integer.parseInt(splitted[splitted.length - 6]);
 			this.init = Double.parseDouble(splitted[splitted.length - 5]);
@@ -77,7 +77,8 @@ public class BenchEntry<BP extends BenchParameters> {
 	public String toString() {
 		String result = String.join(";", parameters.serializeInputParameters()) + ";" + elts + ";" + init + ";" + resolve + ";" + ram + ";" + successRate;
 		if (hasAdvancedStats)
-			result += ";" + eltsCreated + ";" + eltsDeleted + ";" + matchesFound + ";" + matchesRepaired + ";" + matchesRevoked + ";" + matchesApplied;
+			result += ";" + eltsCreated + ";" + eltsDeleted + ";" + matchesFound + ";" + matchesRepaired + ";" + matchesRevoked + ";" + matchesApplied
+					+ ";" + hasAdvancedStats;
 		return result;
 	}
 
