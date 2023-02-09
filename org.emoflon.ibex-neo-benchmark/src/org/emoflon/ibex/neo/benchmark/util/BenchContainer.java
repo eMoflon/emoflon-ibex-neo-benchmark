@@ -9,8 +9,11 @@ import java.util.Map;
 public class BenchContainer<BP extends BenchParameters> {
 
 	Map<BP, List<BenchEntry<BP>>> params2entries = new HashMap<>();
+	boolean atLeastOneAdvancedStats = false;
 
 	public void addBench(BenchEntry<BP> entry) {
+		if (entry.hasAdvancedStats)
+			atLeastOneAdvancedStats = true;
 		params2entries.computeIfAbsent(entry.parameters, key -> new LinkedList<>()).add(entry);
 	}
 
@@ -21,14 +24,17 @@ public class BenchContainer<BP extends BenchParameters> {
 			break;
 		}
 
-		if(bp == null) {
+		if (bp == null) {
 			System.out.println("No measurements found! Aborting...");
 			return;
 		}
-		
+
 		System.out.println();
-		System.out.println(String.join(";", bp.getInputParameterNames())
-				+ ";elts;avg_init;median_init;avg_resolve;median_resolve;avg_ram;median_ram;success_rate");
+		String header = String.join(";", bp.getInputParameterNames())
+				+ ";elts;avg_init;median_init;avg_resolve;median_resolve;avg_ram;median_ram;success_rate";
+		if (atLeastOneAdvancedStats)
+			header += ";elts_created;elts_deleted;matches_found;matches_repaired;matches_revoked;matches_applied";
+		System.out.println(header);
 		for (BP params : params2entries.keySet()) {
 			System.out.println(average(params, params2entries.get(params)));
 		}
@@ -40,6 +46,13 @@ public class BenchContainer<BP extends BenchParameters> {
 		double avg_ram = 0;
 		double avg_successRate = 0;
 		int elts = -1;
+
+		long elts_created = -1;
+		long elts_deleted = -1;
+		long matches_found = -1;
+		long matches_repaired = -1;
+		long matches_revoked = -1;
+		long matches_applied = -1;
 
 		List<Double> inits = new LinkedList<>();
 		List<Double> resolves = new LinkedList<>();
@@ -55,6 +68,15 @@ public class BenchContainer<BP extends BenchParameters> {
 			inits.add(entry.init);
 			resolves.add(entry.resolve);
 			rams.add(entry.ram);
+
+			if (entry.hasAdvancedStats) {
+				elts_created = entry.eltsCreated;
+				elts_deleted = entry.eltsDeleted;
+				matches_found = entry.matchesFound;
+				matches_repaired = entry.matchesRepaired;
+				matches_revoked = entry.matchesRevoked;
+				matches_applied = entry.matchesApplied;
+			}
 		}
 
 		Collections.sort(inits);
@@ -69,10 +91,14 @@ public class BenchContainer<BP extends BenchParameters> {
 		double med_resolve = resolves.get((int) (resolves.size() / 2));
 		int med_ram = rams.get((int) (rams.size() / 2));
 
-		return String.join(";", params.serializeInputParameters()) + ";" + elts + ";" //
+		String result = String.join(";", params.serializeInputParameters()) + ";" + elts + ";" //
 				+ avg_init + ";" + med_init + ";" //
 				+ avg_resolve + ";" + med_resolve + ";" //
 				+ avg_ram + ";" + med_ram + ";" //
 				+ avg_successRate;
+		if (elts_created != -1)
+			result += ";" + elts_created + ";" + elts_deleted //
+					+ ";" + matches_found + ";" + matches_repaired + ";" + matches_revoked + ";" + matches_applied;
+		return result;
 	}
 }

@@ -223,10 +223,10 @@ public class Village2ConstrPlan_MDGenerator extends
 		int currentDepth = 0;
 
 		// SRC
-		House h = createRootHouse(postfix + SEP + currentDepth, cache, true);
+		House h = createRootHouse(postfix + SEP + currentDepth, cache, false);
 		rootHouses.add(h);
 		// TRG
-		Plan p = createPlan(postfix, cache, true);
+		Plan p = createPlan(postfix, cache, false);
 		plans.add(p);
 		Construction c = createConstruction(postfix + SEP + currentDepth, p, cache, true);
 		Basement bt = createBasement(c, true);

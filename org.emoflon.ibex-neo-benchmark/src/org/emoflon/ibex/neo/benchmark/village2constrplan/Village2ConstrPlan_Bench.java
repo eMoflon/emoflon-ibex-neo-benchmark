@@ -7,6 +7,7 @@ import java.util.function.Function;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.neo.benchmark.IntegrationBench;
 import org.emoflon.ibex.neo.benchmark.ModelAndDeltaGenerator;
+import org.emoflon.ibex.neo.benchmark.util.BenchEntry;
 import org.emoflon.ibex.tgg.operational.benchmark.FullBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.FragmentProvider;
@@ -28,7 +29,6 @@ public class Village2ConstrPlan_Bench extends IntegrationBench<Village2ConstrPla
 	protected INTEGRATE initStub(TGGResourceHandler resourceHandler) throws IOException {
 		IntegrationPattern pattern = new IntegrationPattern(Arrays.asList( //
 				FragmentProvider.REPAIR, //
-				FragmentProvider.RESOLVE_CONFLICTS, //
 				FragmentProvider.RESOLVE_BROKEN_MATCHES, //
 				FragmentProvider.TRANSLATE, //
 				FragmentProvider.CLEAN_UP //
@@ -38,12 +38,12 @@ public class Village2ConstrPlan_Bench extends IntegrationBench<Village2ConstrPla
 			options.resourceHandler(resourceHandler);
 			options.ilpSolver(SupportedILPSolver.Sat4J);
 			options.propagate.usePrecedenceGraph(true);
-			options.repair.useShortcutRules(true);
+			options.repair.useShortcutRules(parameters.repair_mode != RepairMode.NONE);
 			options.repair.advancedOverlapStrategies(false);
-			options.repair.relaxedSCPatternMatching(true);
-			options.repair.omitUnnecessaryContext(true);
+			options.repair.relaxedSCPatternMatching(parameters.repair_mode != RepairMode.NONE);
+			options.repair.omitUnnecessaryContext(parameters.repair_mode != RepairMode.NONE);
 			options.repair.disableInjectivity(true);
-			options.repair.usePGbasedSCruleCreation(parameters.pg_based_repair);
+			options.repair.usePGbasedSCruleCreation(parameters.repair_mode == RepairMode.PG_BASED);
 			options.integration.pattern(pattern);
 			options.debug.benchmarkLogger(benchLogger);
 			return options;
@@ -61,8 +61,16 @@ public class Village2ConstrPlan_Bench extends IntegrationBench<Village2ConstrPla
 	public static void main(String[] args) {
 		Village2ConstrPlan_Params params = new Village2ConstrPlan_Params(args);
 		Village2ConstrPlan_Bench bench = new Village2ConstrPlan_Bench("org.emoflon.ibex-neo-benchmark", params);
-		System.out.println(bench.genAndBench(false));
-//		System.out.println(bench.benchLogger.toString());
+		BenchEntry<Village2ConstrPlan_Params> benchEntry = bench.genAndBench(false);
+		benchEntry.addAdvancedStats( //
+				bench.benchLogger.getTotalElementsCreated(), //
+				bench.benchLogger.getTotalElementsDeleted(), //
+				bench.benchLogger.getTotalMatchesFound(), //
+				bench.benchLogger.getTotalMatchesRepaired(), //
+				bench.benchLogger.getTotalMatchesRevoked(), //
+				bench.benchLogger.getTotalMatchesApplied() //
+		);
+		System.out.println(benchEntry);
 	}
 
 }

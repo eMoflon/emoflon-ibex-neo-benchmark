@@ -9,9 +9,9 @@ public class Village2ConstrPlan_Params extends BenchParameters {
 	public final int street_length;
 	public final int num_of_changes;
 	public final DeltaType delta_type;
-	public final boolean pg_based_repair;
+	public final RepairMode repair_mode;
 
-	public Village2ConstrPlan_Params(String name, int modelScale, int numOfChanges, ScaleOrientation scaleOrientation, DeltaType deltaType, boolean pgBasedRepair) {
+	public Village2ConstrPlan_Params(String name, int modelScale, int numOfChanges, ScaleOrientation scaleOrientation, DeltaType deltaType, RepairMode repairMode) {
 		super(name, modelScale, numOfChanges, scaleOrientation);
 
 		switch (scaleOrientation) {
@@ -29,7 +29,7 @@ public class Village2ConstrPlan_Params extends BenchParameters {
 
 		num_of_changes = numOfChanges;
 		delta_type = deltaType;
-		pg_based_repair = pgBasedRepair;
+		repair_mode = repairMode;
 	}
 
 	public Village2ConstrPlan_Params(String[] args) {
@@ -39,7 +39,7 @@ public class Village2ConstrPlan_Params extends BenchParameters {
 				Integer.valueOf(args[2]), // number of changes
 				ScaleOrientation.valueOf(args[3]), // scale orientation
 				DeltaType.valueOf(args[4]), // delta type
-				Boolean.valueOf(args[5]) // PG based repair
+				RepairMode.valueOf(args[5]) // repair mode
 		);
 	}
 
@@ -51,7 +51,7 @@ public class Village2ConstrPlan_Params extends BenchParameters {
 				String.valueOf(num_of_changes), //
 				scaleOrientation.toString(), //
 				delta_type.toString(), //
-				String.valueOf(pg_based_repair) //
+				repair_mode.toString() //
 		};
 	}
 
@@ -63,7 +63,7 @@ public class Village2ConstrPlan_Params extends BenchParameters {
 				"num_of_changes", //
 				"scale_orientation", //
 				"delta_type", //
-				"pg_based_repair" //
+				"repair_mode" //
 		};
 	}
 
