@@ -13,7 +13,7 @@ import org.emoflon.ibex.neo.benchmark.village2constrplan.Village2ConstrPlan_Para
 public class Village2ConstrPlan_ScaledModelBenchRunner {
 
 	public static void main(String[] args) throws Exception {
-		List<String[]> execArgs = scaledModel_differentDeltas(DeltaType.valueOf(args[0]));
+		List<String[]> execArgs = scaledModel_differentDeltas(DeltaType.valueOf(args[0]), Boolean.valueOf(args[1]));
 
 		ScaledBenchRunner<Village2ConstrPlan_Bench, Village2ConstrPlan_Params> runner = new ScaledBenchRunner<>( //
 				Village2ConstrPlan_Bench.class, Village2ConstrPlan_Params.class, //
@@ -21,7 +21,7 @@ public class Village2ConstrPlan_ScaledModelBenchRunner {
 		runner.run();
 	}
 
-	private static List<String[]> scaledModel_differentDeltas(DeltaType deltaType) {
+	private static List<String[]> scaledModel_differentDeltas(DeltaType deltaType, boolean pgBasedRepair) {
 		int[] modelSize = { //
 //				100 , 200, 300, 400, 500 , 750, 1000, 1500, 2000, 2500, 3000 , 3500, 4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000 //
 				10, 25, 50 //
@@ -40,7 +40,8 @@ public class Village2ConstrPlan_ScaledModelBenchRunner {
 						modelSize[j], //
 						numOfChanges[i], //
 						ScaleOrientation.HORIZONTAL, //
-						deltaType
+						deltaType, //
+						pgBasedRepair //
 				).serializeInputParameters();
 				scale.add(vars);
 			}

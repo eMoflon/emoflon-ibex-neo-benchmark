@@ -349,12 +349,12 @@ public class Village2ConstrPlan_MDGenerator extends
 
 	protected void moveRow(House firstH, House secondH) {
 		Delta delta = createDelta(false, true);
-		
+
 		House firstNextH = firstH.getNextHouse();
 		House secondLastH = secondH;
 		while (secondLastH.getNextHouse() != null)
 			secondLastH = secondLastH.getNextHouse();
-		
+
 		deleteLink(firstH, firstNextH, sPackage.getHouse_NextHouse(), delta);
 		createLink(secondLastH, firstNextH, sPackage.getHouse_NextHouse(), delta);
 	}

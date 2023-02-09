@@ -7,6 +7,7 @@ import java.util.function.Function;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.emoflon.ibex.neo.benchmark.IntegrationBench;
 import org.emoflon.ibex.neo.benchmark.ModelAndDeltaGenerator;
+import org.emoflon.ibex.tgg.operational.benchmark.FullBenchmarkLogger;
 import org.emoflon.ibex.tgg.operational.defaults.IbexOptions;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.FragmentProvider;
 import org.emoflon.ibex.tgg.operational.strategies.integrate.INTEGRATE;
@@ -16,6 +17,8 @@ import org.emoflon.ibex.tgg.run.village2constrplan.INTEGRATE_App;
 import org.emoflon.ibex.tgg.util.ilp.ILPFactory.SupportedILPSolver;
 
 public class Village2ConstrPlan_Bench extends IntegrationBench<Village2ConstrPlan_Params> {
+
+	public final FullBenchmarkLogger benchLogger = new FullBenchmarkLogger();
 
 	public Village2ConstrPlan_Bench(String projectName, Village2ConstrPlan_Params parameters) {
 		super(projectName, parameters);
@@ -30,7 +33,7 @@ public class Village2ConstrPlan_Bench extends IntegrationBench<Village2ConstrPla
 				FragmentProvider.TRANSLATE, //
 				FragmentProvider.CLEAN_UP //
 		));
-		
+
 		Function<IbexOptions, IbexOptions> ibexOptions = options -> {
 			options.resourceHandler(resourceHandler);
 			options.ilpSolver(SupportedILPSolver.Sat4J);
@@ -40,11 +43,12 @@ public class Village2ConstrPlan_Bench extends IntegrationBench<Village2ConstrPla
 			options.repair.relaxedSCPatternMatching(true);
 			options.repair.omitUnnecessaryContext(true);
 			options.repair.disableInjectivity(true);
-			options.repair.usePGbasedSCruleCreation(true);
+			options.repair.usePGbasedSCruleCreation(parameters.pg_based_repair);
 			options.integration.pattern(pattern);
+			options.debug.benchmarkLogger(benchLogger);
 			return options;
 		};
-		
+
 		return new INTEGRATE_App(ibexOptions);
 	}
 
@@ -53,12 +57,12 @@ public class Village2ConstrPlan_Bench extends IntegrationBench<Village2ConstrPla
 			Resource d) {
 		return new Village2ConstrPlan_MDGenerator(s, t, c, p, d);
 	}
-	
+
 	public static void main(String[] args) {
 		Village2ConstrPlan_Params params = new Village2ConstrPlan_Params(args);
 		Village2ConstrPlan_Bench bench = new Village2ConstrPlan_Bench("org.emoflon.ibex-neo-benchmark", params);
 		System.out.println(bench.genAndBench(false));
-//		bench.genAndStore();
+//		System.out.println(bench.benchLogger.toString());
 	}
 
 }
