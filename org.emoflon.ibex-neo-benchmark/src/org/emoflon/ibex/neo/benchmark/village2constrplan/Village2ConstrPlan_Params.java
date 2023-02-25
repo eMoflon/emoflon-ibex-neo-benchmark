@@ -20,7 +20,7 @@ public class Village2ConstrPlan_Params extends BenchParameters {
 			street_length = 5;
 			break;
 		case VERTICAL:
-			num_of_streets = 1;
+			num_of_streets = 2;
 			street_length = modelScale;
 			break;
 		default:
