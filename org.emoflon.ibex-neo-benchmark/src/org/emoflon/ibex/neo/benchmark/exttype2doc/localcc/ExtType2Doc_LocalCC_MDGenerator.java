@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.util.InternalEList;
-import org.emoflon.ibex.neo.benchmark.exttype2doc.BenchCache;
+import org.emoflon.ibex.neo.benchmark.exttype2doc.ExtType2Doc_BenchCache;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.ExtType2Doc_MDGenerator;
 import org.emoflon.smartemf.persistence.SmartEMFResource;
 
@@ -115,7 +115,7 @@ public class ExtType2Doc_LocalCC_MDGenerator extends ExtType2Doc_MDGenerator<Ext
 	}
 
 	private void createRootPackageAndFolder() {
-		BenchCache cache = new BenchCache();
+		ExtType2Doc_BenchCache cache = new ExtType2Doc_BenchCache();
 
 		// SRC
 		rootPackage = createRootPackage("", cache, true);
@@ -146,7 +146,7 @@ public class ExtType2Doc_LocalCC_MDGenerator extends ExtType2Doc_MDGenerator<Ext
 	}
 
 	private void createRootTypeAndDoc(int index) {
-		BenchCache cache = new BenchCache();
+		ExtType2Doc_BenchCache cache = new ExtType2Doc_BenchCache();
 
 		String postfix = SEP + index;
 
@@ -178,7 +178,7 @@ public class ExtType2Doc_LocalCC_MDGenerator extends ExtType2Doc_MDGenerator<Ext
 		allDocs.addAll(cache.name2doc.values());
 	}
 
-	private void createTypeAndDocHierarchy(Type rootT, Doc rootD, int currentDepth, String oldPostfix, BenchCache cache) {
+	private void createTypeAndDocHierarchy(Type rootT, Doc rootD, int currentDepth, String oldPostfix, ExtType2Doc_BenchCache cache) {
 		if (currentDepth >= parameters.inheritance_depth)
 			return;
 
@@ -186,7 +186,7 @@ public class ExtType2Doc_LocalCC_MDGenerator extends ExtType2Doc_MDGenerator<Ext
 			createTypeAndDocInheritance(rootT, rootD, currentDepth, oldPostfix, i, cache);
 	}
 
-	private void createTypeAndDocInheritance(Type superT, Doc superD, int currentDepth, String oldPostfix, int index, BenchCache cache) {
+	private void createTypeAndDocInheritance(Type superT, Doc superD, int currentDepth, String oldPostfix, int index, ExtType2Doc_BenchCache cache) {
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
@@ -216,12 +216,12 @@ public class ExtType2Doc_LocalCC_MDGenerator extends ExtType2Doc_MDGenerator<Ext
 		createTypeAndDocHierarchy(t, d, currentDepth + 1, postfix, cache);
 	}
 
-	private void createMethodsAndEntries(Type t, Doc d, String oldPostfix, BenchCache cache) {
+	private void createMethodsAndEntries(Type t, Doc d, String oldPostfix, ExtType2Doc_BenchCache cache) {
 		for (int i = 0; i < parameters.num_of_methods; i++)
 			createMethodAndEntry(t, d, oldPostfix, i, cache);
 	}
 
-	private void createMethodAndEntry(Type t, Doc d, String oldPostfix, int index, BenchCache cache) {
+	private void createMethodAndEntry(Type t, Doc d, String oldPostfix, int index, ExtType2Doc_BenchCache cache) {
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
@@ -244,12 +244,12 @@ public class ExtType2Doc_LocalCC_MDGenerator extends ExtType2Doc_MDGenerator<Ext
 		createJavaDocsAndAnnotations(m, e, postfix, cache);
 	}
 
-	private void createFieldsAndEntries(Type t, Doc d, String oldPostfix, BenchCache cache) {
+	private void createFieldsAndEntries(Type t, Doc d, String oldPostfix, ExtType2Doc_BenchCache cache) {
 		for (int i = 0; i < parameters.num_of_fields; i++)
 			createFieldAndEntry(t, d, oldPostfix, i, cache);
 	}
 
-	private void createFieldAndEntry(Type t, Doc d, String oldPostfix, int index, BenchCache cache) {
+	private void createFieldAndEntry(Type t, Doc d, String oldPostfix, int index, ExtType2Doc_BenchCache cache) {
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
@@ -269,12 +269,12 @@ public class ExtType2Doc_LocalCC_MDGenerator extends ExtType2Doc_MDGenerator<Ext
 		marker.setCREATE__TRG__e(e);
 	}
 
-	private void createParameters(Method m, Entry e, String oldPostfix, BenchCache cache) {
+	private void createParameters(Method m, Entry e, String oldPostfix, ExtType2Doc_BenchCache cache) {
 		for (int i = 0; i < parameters.num_of_parameters; i++)
 			createParameters(m, e, oldPostfix, i, cache);
 	}
 
-	private void createParameters(Method m, Entry e, String oldPostfix, int index, BenchCache cache) {
+	private void createParameters(Method m, Entry e, String oldPostfix, int index, ExtType2Doc_BenchCache cache) {
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
@@ -291,12 +291,12 @@ public class ExtType2Doc_LocalCC_MDGenerator extends ExtType2Doc_MDGenerator<Ext
 		marker.setCREATE__CORR__p2e(p2e);
 	}
 
-	private void createJavaDocsAndAnnotations(Method m, Entry e, String oldPostfix, BenchCache cache) {
+	private void createJavaDocsAndAnnotations(Method m, Entry e, String oldPostfix, ExtType2Doc_BenchCache cache) {
 		for (int i = 0; i < parameters.num_of_javadocs; i++)
 			createJavaDocAndAnnotation(m, e, oldPostfix, i, cache);
 	}
 
-	private void createJavaDocAndAnnotation(Method m, Entry e, String oldPostfix, int index, BenchCache cache) {
+	private void createJavaDocAndAnnotation(Method m, Entry e, String oldPostfix, int index, ExtType2Doc_BenchCache cache) {
 		String postfix = oldPostfix + SEP + index;
 
 		// SRC
@@ -325,7 +325,7 @@ public class ExtType2Doc_LocalCC_MDGenerator extends ExtType2Doc_MDGenerator<Ext
 	}
 
 	private void createTypeAndDocHierarchyDelta(Type t) {
-		BenchCache cache = new BenchCache();
+		ExtType2Doc_BenchCache cache = new ExtType2Doc_BenchCache();
 		Delta delta = createDelta(false, true);
 
 		Doc d = name2doc.get(t.getName());
@@ -341,7 +341,7 @@ public class ExtType2Doc_LocalCC_MDGenerator extends ExtType2Doc_MDGenerator<Ext
 			createTypeAndDocHierarchyDelta(delta, subT, subD, 1, cache);
 	}
 
-	private void createTypeAndDocHierarchyDelta(Delta delta, Type superT, Doc superD, int currentDepth, BenchCache cache) {
+	private void createTypeAndDocHierarchyDelta(Delta delta, Type superT, Doc superD, int currentDepth, ExtType2Doc_BenchCache cache) {
 		String postfix = "_delta_" + (currentDepth - 1);
 
 		Type newT = createType(postfix, false, null, cache, false);

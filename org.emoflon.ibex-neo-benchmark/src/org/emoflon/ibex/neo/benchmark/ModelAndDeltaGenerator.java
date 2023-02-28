@@ -11,7 +11,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.ibex.neo.benchmark.exttype2doc.BenchCache;
 import org.emoflon.ibex.neo.benchmark.util.BenchParameters;
 
 import delta.AttributeDelta;
@@ -28,7 +27,6 @@ public abstract class ModelAndDeltaGenerator<CorrFactory extends EFactory, //
 
 	public final String SEP = "_";
 
-	
 	protected final Resource source;
 	protected final Resource target;
 	protected final Resource corr;
@@ -87,7 +85,7 @@ public abstract class ModelAndDeltaGenerator<CorrFactory extends EFactory, //
 	public int getNumOfElements() {
 		return numOfElements.get();
 	}
-	
+
 	protected void addNumOfElements(int numOfElts) {
 		this.numOfElements.addAndGet(numOfElts);
 	}
@@ -97,20 +95,20 @@ public abstract class ModelAndDeltaGenerator<CorrFactory extends EFactory, //
 		corr.eSet(corr.eClass().getEStructuralFeature("target"), trg);
 		return corr;
 	}
-	
+
 	protected <Corr extends EObject> Corr createCorr(Corr corr, EObject src, EObject trg, BenchCache cache) {
 		createCorr(corr, src, trg);
 		cache.corrs.add(corr);
 		cache.src2corr.put(src, corr);
 		return corr;
 	}
-	
+
 	protected void addCacheContent(BenchCache cache) {
 		allCorrs.addAll(cache.corrs);
 		allMarkers.addAll(cache.markers);
 		addNumOfElements(cache.numOfElements);
 	}
-	
+
 	//// DELTA ////
 
 	private void createDeltaContainer() {

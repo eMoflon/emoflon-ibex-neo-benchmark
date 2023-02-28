@@ -12,4 +12,7 @@ Require-Bundle: ExtTypeModel,
  org.emoflon.ibex.tgg.runtime,
  ExtType2Doc_ConcSync,
  ExtType2Doc_LookAhead,
- ExtType2Doc_ShortCut
+ ExtType2Doc_ShortCut,
+ Village2ConstrPlan,
+ Village,
+ ConstructionPlan

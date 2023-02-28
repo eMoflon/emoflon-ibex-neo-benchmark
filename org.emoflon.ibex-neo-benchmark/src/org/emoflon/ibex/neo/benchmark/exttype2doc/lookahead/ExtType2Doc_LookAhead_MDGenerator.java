@@ -1,7 +1,7 @@
 package org.emoflon.ibex.neo.benchmark.exttype2doc.lookahead;
 
 import org.eclipse.emf.ecore.resource.Resource;
-import org.emoflon.ibex.neo.benchmark.exttype2doc.BenchCache;
+import org.emoflon.ibex.neo.benchmark.exttype2doc.ExtType2Doc_BenchCache;
 import org.emoflon.ibex.neo.benchmark.exttype2doc.ExtType2Doc_MDGenerator;
 
 import ExtDocModel.Folder;
@@ -29,7 +29,7 @@ public abstract class ExtType2Doc_LookAhead_MDGenerator extends ExtType2Doc_MDGe
 		super.clearAll();
 	}
 
-	protected Package createContainerPackage(String postfix, BenchCache cache) {
+	protected Package createContainerPackage(String postfix, ExtType2Doc_BenchCache cache) {
 		sContainer = sFactory.createPackage();
 		sContainer.setName("Package" + postfix);
 		source.getContents().add(sContainer);
@@ -37,7 +37,7 @@ public abstract class ExtType2Doc_LookAhead_MDGenerator extends ExtType2Doc_MDGe
 		return sContainer;
 	}
 
-	protected Folder createContainerFolder(String postfix, BenchCache cache) {
+	protected Folder createContainerFolder(String postfix, ExtType2Doc_BenchCache cache) {
 		tContainer = tFactory.createFolder();
 		tContainer.setName("Package" + postfix);
 		target.getContents().add(tContainer);
