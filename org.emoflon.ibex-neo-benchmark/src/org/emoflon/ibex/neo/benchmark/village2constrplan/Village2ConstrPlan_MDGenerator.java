@@ -132,45 +132,57 @@ public class Village2ConstrPlan_MDGenerator extends
 		return c;
 	}
 
-	protected Cellar createCellar(Construction c, boolean addToParent) {
+	protected Cellar createCellar(Construction c, Village2ConstrPlan_BenchCache cache, boolean addToParent) {
 		Cellar cl = tFactory.createCellar();
 		if (addToParent)
 			c.setFirstStep(cl);
+		if (cache != null)
+			cache.numOfElements++;
 		return cl;
 	}
 
-	protected Cellar createCellar(Component c, boolean addToParent) {
+	protected Cellar createCellar(Component c, Village2ConstrPlan_BenchCache cache, boolean addToParent) {
 		Cellar cl = tFactory.createCellar();
 		if (addToParent)
 			c.setNextStep(cl);
+		if (cache != null)
+			cache.numOfElements++;
 		return cl;
 	}
 
-	protected Basement createBasement(Construction c, boolean addToParent) {
+	protected Basement createBasement(Construction c, Village2ConstrPlan_BenchCache cache, boolean addToParent) {
 		Basement bt = tFactory.createBasement();
 		if (addToParent)
 			c.setFirstStep(bt);
+		if (cache != null)
+			cache.numOfElements++;
 		return bt;
 	}
 
-	protected Basement createBasement(Component c, boolean addToParent) {
+	protected Basement createBasement(Component c, Village2ConstrPlan_BenchCache cache, boolean addToParent) {
 		Basement bt = tFactory.createBasement();
 		if (addToParent)
 			c.setNextStep(bt);
+		if (cache != null)
+			cache.numOfElements++;
 		return bt;
 	}
 
-	protected SaddleRoof createSaddleRoof(Construction c, boolean addToParent) {
+	protected SaddleRoof createSaddleRoof(Construction c, Village2ConstrPlan_BenchCache cache, boolean addToParent) {
 		SaddleRoof sr = tFactory.createSaddleRoof();
 		if (addToParent)
 			c.setFirstStep(sr);
+		if (cache != null)
+			cache.numOfElements++;
 		return sr;
 	}
 
-	protected SaddleRoof createSaddleRoof(Component c, boolean addToParent) {
+	protected SaddleRoof createSaddleRoof(Component c, Village2ConstrPlan_BenchCache cache, boolean addToParent) {
 		SaddleRoof sr = tFactory.createSaddleRoof();
 		if (addToParent)
 			c.setNextStep(sr);
+		if (cache != null)
+			cache.numOfElements++;
 		return sr;
 	}
 
@@ -229,7 +241,7 @@ public class Village2ConstrPlan_MDGenerator extends
 		Plan p = createPlan(postfix, cache, false);
 		plans.add(p);
 		Construction c = createConstruction(postfix + SEP + currentDepth, p, cache, true);
-		Basement bt = createBasement(c, true);
+		Basement bt = createBasement(c, cache, true);
 		// CORR
 		House2Constr h2c = createCorr(cFactory.createHouse2Constr(), h, c, cache);
 
@@ -256,8 +268,8 @@ public class Village2ConstrPlan_MDGenerator extends
 		House h = createHouse(postfix + SEP + currentDepth, prevH, HouseType.CUBE, cache, true);
 		// TRG
 		Construction c = createConstruction(postfix + SEP + currentDepth, p, cache, true);
-		Cellar cl = createCellar(c, true);
-		Basement bt = createBasement(cl, true);
+		Cellar cl = createCellar(c, cache, true);
+		Basement bt = createBasement(cl, cache, true);
 		// CORR
 		House2Constr h2c = createCorr(cFactory.createHouse2Constr(), h, c, cache);
 
@@ -283,8 +295,8 @@ public class Village2ConstrPlan_MDGenerator extends
 		House h = createHouse(postfix + SEP + currentDepth, prevH, HouseType.VILLA, cache, true);
 		// TRG
 		Construction c = createConstruction(postfix + SEP + currentDepth, p, cache, true);
-		Basement bt = createBasement(c, true);
-		SaddleRoof sr = createSaddleRoof(bt, true);
+		Basement bt = createBasement(c, cache, true);
+		SaddleRoof sr = createSaddleRoof(bt, cache, true);
 		// CORR
 		House2Constr h2c = createCorr(cFactory.createHouse2Constr(), h, c, cache);
 
